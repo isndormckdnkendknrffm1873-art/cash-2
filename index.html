@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fly Chicken | Advanced POS System</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ================= الهوية والـ 120FPS Performance ================= */
+        :root {
+            --primary: #ff6a19; --primary-hover: #e55a12;
+            --bg-black: #0a0a0a; --surface: #1c1c1c; --surface-light: #2b2b2b;
+            --border-thick: #000000; --text-main: #ffffff;
+            --success: #2ecc71; --danger: #e74c3c;
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition: all 0.15s ease-out;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
+        body, html { background-color: var(--bg-black); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
+        
+        /* تسريع الرندر 120FPS عبر GPU */
+        .square-card, .view-section, .dashboard-modal { will-change: transform, opacity; transform: translateZ(0); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-black); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ================= التخطيط الأساسي ================= */
+        .sidebar { width: 420px; background: var(--surface); border-left: 2px solid var(--border-thick); display: flex; flex-direction: column; padding: 20px; z-index: 10; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-black); }
+
+        /* ================= الترويسة ================= */
+        .header { padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--surface-light); }
+        .brand-title { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; color: white; text-shadow: 2px 2px 0 #000;}
+        .brand-title span { color: var(--primary); }
+        .header-actions { display: flex; gap: 10px; }
+        .btn-control { background: var(--surface-light); border: 2px solid var(--border-thick); color: white; padding: 10px 20px; border-radius: 12px; font-size: 1.1rem; font-weight:bold; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+        .btn-control:active { transform: scale(0.95); color: var(--primary); }
+        .btn-control.active-mic { border-color: var(--success); color: var(--success); pointer-events: none; }
+
+        /* ================= الشبكة ================= */
+        .view-section { flex: 1; overflow-y: auto; padding: 20px 30px; display: none; opacity: 0; transform: scale(0.98); animation: fadeIn 0.2s var(--spring) forwards; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { to { opacity: 1; transform: scale(1); } }
+        .page-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .page-title span { color: var(--primary); }
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; }
+
+        .square-card { background: var(--surface); border: 2px solid var(--surface-light); border-radius: 16px; aspect-ratio: 1 / 1.15; position: relative; overflow: hidden; cursor: pointer; transition: var(--transition); }
+        .square-card:active { transform: scale(0.94); }
+        .square-card.has-items { border-color: var(--primary); background: #1f140e; }
+        .card-main { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; transition: transform 0.3s var(--spring); z-index: 2; }
+        .card-icon-container { font-size: 3rem; color: var(--primary); margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: 0.3s var(--spring); }
+        .card-icon-container svg { width: 1em; height: 1em; }
+        .square-card.controls-open .card-icon-container { transform: scale(0.6) translateY(5px); }
+        .card-name { font-size: 1.1rem; font-weight: 900; text-align: center; line-height: 1.2; }
+        .card-price { font-size: 1.1rem; font-weight: 900; color: var(--success); margin-top: 8px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 8px; }
+        .square-card.controls-open .card-main { transform: translateY(-30px); }
+        .added-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; opacity: 0; transform: scale(0); transition: var(--spring); z-index: 5; font-size: 1.2rem; border: 2px solid #000; }
+        .square-card.has-items:not(.controls-open) .added-badge { opacity: 1; transform: scale(1); }
+
+        .action-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: var(--surface-light); border-top: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; padding: 0 10px; transform: translateY(100%); opacity: 0; transition: transform 0.3s var(--spring); z-index: 3; }
+        .square-card.controls-open .action-drawer { transform: translateY(0); opacity: 1; }
+        .qty-btn { background: var(--bg-black); color: var(--text-main); border: 2px solid var(--border-thick); width: 40px; height: 40px; border-radius: 10px; font-size: 1.4rem; font-weight: 900; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; }
+        .qty-btn:active { background: var(--primary); color: #000; transform: scale(0.9); }
+        .qty-num { font-size: 1.5rem; font-weight: 900; color: white; min-width: 30px; text-align: center; }
+        .custom-price-input { width: 100%; height: 40px; background: var(--bg-black); border: 2px solid var(--border-thick); border-radius: 10px; padding: 0 10px; font-size: 1.1rem; font-weight: 800; color: white; text-align: center; margin-left: 10px; }
+        .btn-add-custom { background: var(--primary); color: white; border: none; height: 40px; padding: 0 15px; border-radius: 10px; font-weight: 900; cursor: pointer; }
+
+        /* ================= الفاتورة ================= */
+        .sidebar-header { font-size: 1.5rem; font-weight: 900; border-bottom: 2px solid var(--surface-light); padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        .cart-items-list { flex: 1; overflow-y: auto; background: var(--bg-black); border-radius: 15px; padding: 10px; border: 1px solid var(--surface-light); margin-bottom: 10px; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #333; gap: 10px; }
+        .cart-item-name { font-weight: 800; font-size: 1rem; flex: 1; }
+        .cart-item-price { font-size: 1.1rem; font-weight: 900; color: var(--success); }
+        .cart-item-actions { display: flex; align-items: center; gap: 8px; background: var(--surface); padding: 5px; border-radius: 8px; border: 1px solid #333; }
+        .modal-qty-btn { background: var(--bg-black); color: white; border: none; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 1.5rem; font-weight: 900; color: white; }
+        .cart-total-row span:last-child { color: var(--primary); }
+        
+        .order-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .type-btn { background: var(--surface); border: 2px solid var(--surface-light); color: white; padding: 10px; border-radius: 10px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.1s; }
+        .type-btn.selected { background: var(--primary); border-color: var(--primary); color: #000; }
+        
+        .customer-name-input { width: 100%; height: 45px; background: var(--bg-black); border: 2px solid var(--surface-light); border-radius: 10px; padding: 0 15px; font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 10px; }
+        .notes-input { width: 100%; height: 60px; background: var(--bg-black); border: 2px solid var(--surface-light); border-radius: 10px; padding: 10px 15px; font-size: 1rem; font-weight: 700; color: white; margin-bottom: 10px; resize: none; }
+        
+        .btn-confirm { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 1.3rem; font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.1s;}
+        .btn-confirm:active { transform: scale(0.98); }
+
+        /* ================= لوحة الإدارة ================= */
+        .dashboard-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.2s; backdrop-filter: blur(5px); }
+        .dashboard-overlay.active { opacity: 1; display: flex; }
+        .dashboard-modal { background: var(--surface); width: 95%; max-width: 1100px; height: 90vh; border-radius: 20px; display: flex; flex-direction: column; border: 2px solid var(--primary); overflow: hidden; transform: scale(0.95); transition: 0.2s; }
+        .dashboard-overlay.active .dashboard-modal { transform: scale(1); }
+        
+        .dash-header { background: var(--bg-black); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-thick); }
+        .dash-title { font-size: 1.5rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .close-dash { background: var(--danger); border: none; color: white; width: 35px; height: 35px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
+        
+        .dash-tabs { display: flex; background: var(--surface-light); padding: 10px 20px; gap: 10px; flex-wrap: wrap; }
+        .tab-btn { background: var(--bg-black); border: 1px solid #444; color: white; font-size: 1.1rem; font-weight: bold; padding: 8px 15px; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        
+        .dash-content { flex: 1; overflow-y: auto; padding: 20px; background: var(--bg-black); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--surface-light); padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-card h3 { color: #aaa; margin-bottom: 10px; font-size: 1rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 900; color: var(--primary); }
+        .stat-card.danger .value { color: var(--danger); }
+        .stat-card.success .value { color: var(--success); }
+
+        .settings-row { background: var(--surface); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--surface-light); }
+        .settings-row select { background: var(--bg-black); color: white; padding: 10px; border-radius: 8px; border: 1px solid var(--primary); font-size: 1.1rem; width: 300px; font-weight: bold; }
+        .btn-shift { background: var(--danger); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+
+        .order-row { background: var(--surface); border: 1px solid var(--surface-light); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .order-info h4 { color: var(--primary); font-size: 1.2rem; margin-bottom: 5px; }
+        .order-info p { color: #aaa; font-size: 0.9rem; margin-bottom: 5px; }
+        .order-items-badge { background: var(--bg-black); padding: 4px 8px; border-radius: 6px; font-size: 0.9rem; display: inline-block; margin: 2px; border: 1px solid #333; }
+        .btn-delete-order { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .trash-row { border-color: var(--danger); opacity: 0.8; }
+        .trash-row h4 { color: var(--danger); text-decoration: line-through; }
+
+        /* ================= الطباعة ================= */
+        .receipt-print-zone { display: none; }
+        @media print {
+            body * { visibility: hidden; margin: 0; padding: 0; background: #fff !important; color: #000 !important; box-shadow: none !important; }
+            .receipt-print-zone, .receipt-print-zone * { visibility: visible; }
+            .receipt-print-zone { display: block; position: absolute; left: 0; top: 0; width: 80mm; padding: 2mm 5mm; direction: rtl; }
+            @page { margin: 0; width: 80mm; }
+            .print-header { text-align: center; font-size: 24px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 10px; }
+            .print-info-row { font-size: 16px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; }
+            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            .print-table th { border-bottom: 2px solid #000; padding: 5px 0; font-size: 14px; text-align: right; }
+            .print-table td { padding: 8px 0; border-bottom: 1px dashed #000; font-size: 18px; font-weight: 900; }
+            .print-qty { text-align: center; font-size: 22px !important; font-weight: 900; border: 2px solid #000; width: 45px; }
+            .print-name { padding-right: 12px; }
+            .print-notes { margin-top: 10px; padding: 8px; border: 2px dashed #000; font-size: 18px; font-weight: 900; width: 100%; word-wrap: break-word; line-height: 1.4; display: block; }
+            .print-footer { font-size: 18px; font-weight: 900; text-align: center; border-top: 2px dashed #000; padding-top: 10px; margin-top: 5px;}
+        }
+
+        #recording-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 9999; display: none; box-shadow: 0 0 15px rgba(231, 76, 60, 0.5); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="recording-indicator"><i class="fas fa-microphone"></i> جاري تسجيل الطلب...</div>
+
+    <div class="main-content">
+        <header class="header">
+            <button class="btn-control" id="btn-back" onclick="goBack()" style="opacity: 0; pointer-events: none;"><i class="fas fa-arrow-right"></i> رجوع</button>
+            <div class="brand-title">FLY <span>CHICKEN</span></div>
+            <div class="header-actions">
+                <button class="btn-control" id="btn-mic" onclick="initMicrophone()"><i class="fas fa-microphone"></i> تفعيل المايك</button>
+                <button class="btn-control" onclick="openDashboard()"><i class="fas fa-cog"></i> الإدارة والوردية</button>
+            </div>
+        </header>
+
+        <main class="view-section active" id="view-categories">
+            <div class="page-title"><i class="fas fa-th-large"></i> <span>المنيو</span> اختر القسم</div>
+            <div class="grid-layout" id="categories-grid"></div>
+        </main>
+
+        <main class="view-section" id="view-items">
+            <div class="page-title" id="category-title">الأصناف</div>
+            <div class="grid-layout" id="items-grid"></div>
+        </main>
+    </div>
+
+    <!-- الشريط الجانبي (الفاتورة) -->
+    <div class="sidebar">
+        <div class="sidebar-header"><i class="fas fa-receipt"></i> الفاتورة الحالية</div>
+        <div class="cart-items-list" id="cart-items-list"></div>
+        
+        <div class="cart-total-row"><span>الإجمالي:</span><span id="cart-total-price">0</span></div>
+        <div class="cart-total-row" id="delivery-fee-display" style="display:none; font-size:1.1rem; color:#aaa;"><span>التوصيل:</span><span id="delivery-fee-val">0</span></div>
+
+        <div class="delivery-section" style="margin-top: 10px;">
+            <div class="order-type-grid">
+                <button class="type-btn" id="btn-pickup" onclick="setOrderType('pickup')">استلام (صالة/سفري)</button>
+                <button class="type-btn" id="btn-delivery" onclick="setOrderType('delivery')">توصيل 🛵</button>
+            </div>
+            <input type="text" id="customer-name" class="customer-name-input" placeholder="اسم الزبون / رقم الهاتف...">
+            <textarea id="order-notes" class="notes-input" placeholder="ملاحظات المطبخ (بدون مايونيز، حار زيادة...)"></textarea>
+            <button class="btn-confirm" id="btn-print" onclick="processOrder()">
+                <i class="fas fa-print"></i> اتمام وطباعة (Numpad +)
+            </button>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم المدير -->
+    <div class="dashboard-overlay" id="dashboard-modal">
+        <div class="dashboard-modal">
+            <div class="dash-header">
+                <div class="dash-title"><i class="fas fa-user-shield"></i> لوحة الإدارة والورديات</div>
+                <button class="close-dash" onclick="closeDashboard()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="dash-tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-stats')"><i class="fas fa-chart-pie"></i> ملخص الوردية الحالية</button>
+                <button class="tab-btn" onclick="switchTab('tab-active')"><i class="fas fa-list"></i> طلبات الوردية</button>
+                <button class="tab-btn" onclick="switchTab('tab-trash')"><i class="fas fa-trash-alt"></i> سلة المهملات</button>
+                <button class="tab-btn" onclick="switchTab('tab-shifts')"><i class="fas fa-archive"></i> الصناديق المغلقة</button>
+                <button class="tab-btn" onclick="switchTab('tab-settings')"><i class="fas fa-cogs"></i> الإعدادات</button>
+            </div>
+            <div class="dash-content">
+                <!-- الإحصائيات -->
+                <div id="tab-stats" class="tab-pane active">
+                    <div class="stats-grid">
+                        <div class="stat-card success">
+                            <h3><i class="fas fa-money-bill-wave"></i> مبيعات الوردية الحالية</h3>
+                            <div class="value" id="stat-total-sales">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3><i class="fas fa-shopping-bag"></i> الطلبات المنفذة</h3>
+                            <div class="value" id="stat-total-orders">0</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <h3><i class="fas fa-exclamation-triangle"></i> المبالغ المحذوفة</h3>
+                            <div class="value" id="stat-deleted-sales">0</div>
+                        </div>
+                    </div>
+                    <div style="text-align: left; margin-top: 20px;">
+                        <button class="btn-shift" onclick="closeShiftProcess()"><i class="fas fa-lock"></i> إغلاق الصندوق (تصفير الوردية)</button>
+                    </div>
+                </div>
+                
+                <div id="tab-active" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; color: var(--primary);">طلبات الوردية (النشطة)</h2>
+                    <div id="active-orders-list"></div>
+                </div>
+
+                <div id="tab-trash" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; color: var(--danger);">الطلبات المحذوفة للوردية</h2>
+                    <div id="trash-orders-list"></div>
+                </div>
+
+                <!-- الصناديق المغلقة -->
+                <div id="tab-shifts" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; color: var(--primary);">أرشيف الصناديق المغلقة</h2>
+                    <div id="shifts-list"></div>
+                </div>
+
+                <!-- الإعدادات -->
+                <div id="tab-settings" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; color: var(--primary);">إعدادات النظام</h2>
+                    <div class="settings-row">
+                        <div>
+                            <h3 style="margin-bottom: 5px;">طابعة الفواتير (الحرارية)</h3>
+                            <p style="color:#aaa; font-size:0.9rem;">سيتم الطباعة عليها مباشرة دون نوافذ تأكيد.</p>
+                        </div>
+                        <select id="printer-select">
+                            <option value="">الطابعة الافتراضية للنظام</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- منطقة الطباعة -->
+    <div class="receipt-print-zone" id="printable-receipt"></div>
+
+    <script>
+        // ربط الواجهة مع Electron للطباعة الصامتة
+        let ipcRenderer = null;
+        try {
+            const electron = require('electron');
+            ipcRenderer = electron.ipcRenderer;
+        } catch (e) { console.log('يعمل في وضع المتصفح (لا يوجد Electron)'); }
+
+        // ================= البيانات الأصلية =================
+        const menuData = [
+          { "id": "shawarma", "title": "ركن الشاورما", "icon": "svg_shawarma", "items": [ { "name": "شاورما كبيرة", "price": 20000 }, { "name": "شاورما وسط", "price": 16000 }, { "name": "شاورما صغيرة", "price": 12000 }, { "name": "شاورما دبل", "price": 27000, "bestseller": true }, { "name": "وجبة عربي", "price": 35000 }, { "name": "وجبة عربي دبل", "price": 45000, "bestseller": true }, { "name": "خرطوشة", "price": 6000 }, { "name": "فلاي شاورما", "price": 40000 }, { "name": "وجبة فرط200غ", "price": 40000 }, { "name": "وجبة خراطيش", "price": 40000 }, { "name": "فرط شاورما", "customPrice": true }, { "name": "كيلو شاورما", "price": 150000 }, { "name": "شاورما تشيز", "price": 27000 }, { "name": "فتة شاورما", "price": 30000 }, { "name": "شاورما صمون", "price": 22000 } ] },
+          { "id": "western", "title": "ركن الغربي", "icon": "svg_sandwich", "subCategories": [ { "id": "western_sandwiches", "title": "السندويشات", "icon": "svg_sandwich", "items": [ { "name": "كريسبي", "price": 35000 }, { "name": "زنجر", "price": 35000 }, { "name": "كريزي زنجر", "price": 40000 }, { "name": "سكالوب", "price": 35000 }, { "name": "سوبريم", "price": 35000 }, { "name": "مكسيكي", "price": 35000 }, { "name": "فاهيتا", "price": 35000 }, { "name": "شيش طاووق", "price": 35000 }, { "name": "فرانشيسكو", "price": 35000 }, { "name": "فلاي تشكن", "price": 40000 } ] }, { "id": "western_meals", "title": "الوجبات", "icon": "fa-box-open", "items": [ { "name": "وجبة كريسبي", "price": 60000, "bestseller": true }, { "name": "زنجر", "price": 60000 }, { "name": "سكالوب", "price": 60000 }, { "name": "سوبريم", "price": 60000 }, { "name": "مكسيكي", "price": 60000 }, { "name": "فاهيتا", "price": 60000 }, { "name": "شيش طاووق", "price": 60000 }, { "name": "فرانشيسكو", "price": 60000 }, { "name": "لودد تشكن فرايز", "price": 35000 }, { "name": "ريزو كريسبي", "price": 35000 } ] } ] },
+          { "id": "burger", "title": "ركن البرغر", "icon": "fa-burger", "items": [ { "name": "برغر كلاسيك لحم", "price": 40000 }, { "name": "بيغ برغر", "price": 55000, "bestseller": true }, { "name": "برغر دجاج", "price": 35000 }, { "name": "ستيكس برغر", "price": 40000, "customPrice": false }, { "name": "فلاي برغر", "price": 45000 } ] },
+          { "id": "chicken", "title": "الفروج", "icon": "fa-drumstick-bite", "items": [ { "name": " فروج بروستد ", "price": 110000, "bestseller": true }, { "name": "نصف فروج بروستد", "price": 60000 }, { "name": "جوانح بوفالو", "price": 35000 }, { "name": "جوانح هاني ماسترد", "price": 35000 }, { "name": "جوانح باربكيو", "price": 35000 }, { "name": "فروج مشوي", "price": 100000 }, { "name": "نصف فروج مشوي", "price": 55000 } ] },
+          { "id": "potatoes", "title": "البطاطا", "icon": "svg_fries", "items": [ { "name": "سندويش بطاطا", "price": 15000 }, { "name": "ساندويش تشيز بطاطا", "price": 20000 }, { "name": "صحن بطاطا", "price": 30000 }, { "name": "صحن تشيز بطاطا", "price": 40000 }, { "name": "صحن بطاطا كبير", "price": 50000 }, { "name": "علبة بطاطا شخصية", "price": 15000 }, { "name": "لودد فرايز", "price": 25000 } ] },
+          { "id": "salads", "title": "السلطات والمقبلات", "icon": "fa-bowl-food", "subCategories": [ { "id": "salads_only", "title": "السلطات", "icon": "fa-leaf", "items": [ { "name": "سلطة سيزر", "price": 20000 }, { "name": "سلطة روسية", "price": 5000 } ] }, { "id": "appetizers", "title": "المقبلات", "icon": "fa-utensils", "items": [ { "name": "5 اصابع موزاريلا", "price": 20000 }, { "name": "معكرونة باردة", "price": 5000 }, { "name": "محمرة", "price": 5000 }, { "name": "اصبع موزاريلا", "price": 4000 } ] }, { "id": "sauces", "title": "الصوصات", "icon": "fa-jar", "items": [ { "name": "كريم توم", "price": 3000 }, { "name": "مايونيز غربي", "price": 3000 }, { "name": "كوكتيل", "price": 3000 }, { "name": "هاني ماسترد", "price": 3000 }, { "name": "حد", "price": 3000 }, { "name": "توم حد", "price": 3000 } ] } ] },
+          { "id": "drinks", "title": "المشروبات", "icon": "fa-bottle-water", "items": [ { "name": "بيبسي وسط", "price": 10000 }, { "name": "سفن وسط", "price": 10000 }, { "name": "بيبسي عائلي", "price": 17000 }, { "name": "سفن عائلي", "price": 17000 }, { "name": "بيبسي تنك", "price": 7000, "bestseller": true }, { "name": "سفن تنك", "price": 7000 }, { "name": "عيران", "price": 5000 }, { "name": "مياه صغيرة", "price": 3000 } ] },
+          { "id": "rice", "title": "الرز", "icon": "fa-bowl-rice", "items": [ { "name": "رز منسف كبير", "price": 30000 }, { "name": "رز منسف صغير", "price": 12000 } ] }
+        ];
+
+        // ================= المتغيرات والداتا بيز =================
+        let cart = {}; 
+        let selectedOrderType = null; 
+        let navigationHistory = [];
+        let deliveryFee = 0;
+        
+        let globalAudioStream = null; 
+        let mediaRecorder = null; 
+        let audioChunks = []; 
+        let isRecording = false;
+
+        let db;
+        // الإصدار 3 لإنشاء جدول الصناديق (Shifts)
+        const dbRequest = indexedDB.open("FlyChickenPOS_DB", 3); 
+        dbRequest.onupgradeneeded = e => { 
+            db = e.target.result; 
+            if (!db.objectStoreNames.contains("orders")) db.createObjectStore("orders", { keyPath: "id" }); 
+            if (!db.objectStoreNames.contains("shifts")) db.createObjectStore("shifts", { keyPath: "id" }); 
+        };
+        dbRequest.onsuccess = e => { db = e.target.result; loadPrinters(); };
+
+        // ================= الإقلاع التلقائي للمايك =================
+        window.onload = () => {
+            initMicrophone();
+            renderCategories();
+        };
+
+        async function initMicrophone() {
+            try {
+                if (!globalAudioStream) {
+                    globalAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const micBtn = document.getElementById('btn-mic');
+                    micBtn.classList.add('active-mic');
+                    micBtn.innerHTML = `<i class="fas fa-microphone"></i> المايك جاهز`;
+                }
+            } catch (err) { console.warn("المايك غير مفعل."); }
+        }
+
+        function startOrderRecording() {
+            if (!globalAudioStream || isRecording) return;
+            mediaRecorder = new MediaRecorder(globalAudioStream);
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+            mediaRecorder.start();
+            isRecording = true;
+            document.getElementById('recording-indicator').style.display = 'block';
+        }
+
+        // ================= اختصار لوحة المفاتيح (+ للطباعة) =================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '+' || e.key === 'Add') {
+                // منع كتابة علامة + في حقول النص وتنفيذ الطباعة فوراً
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    processOrder();
+                } else if (e.target.id === 'customer-name' || e.target.id === 'order-notes') {
+                    e.preventDefault();
+                    processOrder();
+                }
+            }
+        });
+
+        // ================= المنيو =================
+        function getIconHTML(iconName) {
+            if (iconName === 'svg_shawarma') return `<svg viewBox="0 0 64 64" fill="currentColor"><path d="M30 2h4v8h-4z M16 12h32q4 0 4 4t-4 4H16q-4 0-4-4t4-4z M18 22h28q4 0 4 4t-4 4H18q-4 0-4-4t4-4z M20 32h24q4 0 4 4t-4 4H20q-4 0-4-4t4-4z M22 42h20q4 0 4 4t-4 4H22q-4 0-4-4t4-4z M30 52h4v10h-4z"/></svg>`;
+            else if (iconName === 'svg_sandwich') return `<svg viewBox="0 0 64 64" fill="currentColor"><path d="M10 26 C 10 10, 54 10, 54 26 Z" /><path d="M6 30 L16 24 L24 32 L32 24 L40 32 L48 24 L58 30 L58 36 L6 36 Z" /><path d="M10 40 C 10 52, 54 52, 54 40 Z" /></svg>`;
+            else if (iconName === 'svg_fries') return `<svg viewBox="0 0 64 64" fill="currentColor"><path d="M14 12h5v20h-5z M23 6h5v26h-5z M32 4h6v28h-6z M41 8h5v24h-5z M50 14h4v16h-4z M10 30 L16 60 H48 L54 30 C 40 40 24 40 10 30 Z"/></svg>`;
+            else return `<i class="fas ${iconName || 'fa-utensils'}"></i>`;
+        }
+
+        function renderCategories() {
+            navigationHistory = []; const grid = document.getElementById('categories-grid'); grid.innerHTML = '';
+            document.getElementById('view-categories').classList.add('active');
+            document.getElementById('view-items').classList.remove('active');
+            document.getElementById('btn-back').style.opacity = '0';
+            document.getElementById('btn-back').style.pointerEvents = 'none';
+
+            menuData.forEach(cat => {
+                const card = document.createElement('div'); card.className = 'square-card';
+                card.innerHTML = `<div class="card-main"><div class="card-icon-container">${getIconHTML(cat.icon)}</div><div class="card-name">${cat.title}</div></div>`;
+                card.onclick = (e) => { e.stopPropagation(); openCategory(cat); };
+                grid.appendChild(card);
+            });
+        }
+
+        function openCategory(category) { navigationHistory.push(category); renderCurrentLevel(category); }
+
+        function renderCurrentLevel(category) {
+            document.getElementById('view-categories').classList.remove('active');
+            
+            setTimeout(() => {
+                const grid = document.getElementById('items-grid'); grid.innerHTML = '';
+                if (category.subCategories) {
+                    category.subCategories.forEach(sub => {
+                        const card = document.createElement('div'); card.className = 'square-card';
+                        card.innerHTML = `<div class="card-main"><div class="card-icon-container">${getIconHTML(sub.icon || category.icon)}</div><div class="card-name">${sub.title}</div></div>`;
+                        card.onclick = (e) => { e.stopPropagation(); openCategory(sub); };
+                        grid.appendChild(card);
+                    });
+                } else if (category.items) {
+                    category.items.forEach(item => {
+                        let qty = cart[item.name] ? cart[item.name].qty : 0;
+                        const card = document.createElement('div'); card.className = `square-card ${qty > 0 ? 'has-items' : ''}`;
+                        const bestsellerHTML = item.bestseller ? `<div class="bestseller-badge" style="position:absolute; top:0; right:0; background:var(--danger); color:white; padding:4px 10px; font-size:0.8rem; font-weight:900; border-bottom-left-radius:12px; z-index:5;">🔥 الأكثر مبيعاً</div>` : '';
+                        const priceHTML = item.customPrice ? `<div class="card-price">حدد السعر</div>` : `<div class="card-price">${item.price.toLocaleString('en-US')}</div>`;
+                        
+                        let drawerHTML = item.customPrice 
+                            ? `<div class="action-drawer" style="justify-content: center;"><input type="number" class="custom-price-input" id="customPrice_${item.name.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '')}" placeholder="أدخل السعر.."><button class="btn-add-custom">إضافة</button></div>`
+                            : `<div class="action-drawer"><button class="qty-btn minus">-</button><span class="qty-num">${qty}</span><button class="qty-btn plus">+</button></div>`;
+
+                        card.innerHTML = `${bestsellerHTML}<div class="added-badge">${qty}</div><div class="card-main"><div class="card-icon-container">${getIconHTML(category.icon)}</div><div class="card-name">${item.name}</div>${priceHTML}</div>${drawerHTML}`;
+                        
+                        card.querySelector('.card-main').addEventListener('click', (e) => {
+                            e.stopPropagation(); document.querySelectorAll('.square-card.controls-open').forEach(c => c.classList.remove('controls-open'));
+                            card.classList.add('controls-open');
+                        });
+                        
+                        if(item.customPrice) {
+                            card.querySelector('.btn-add-custom').addEventListener('click', (e) => {
+                                e.stopPropagation(); const pInput = document.getElementById(`customPrice_${item.name.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '')}`).value;
+                                if(pInput && parseInt(pInput) > 0) {
+                                    if(Object.keys(cart).length === 0) startOrderRecording(); // بدأ التسجيل من أول صنف
+                                    const cName = `${item.name} (${parseInt(pInput).toLocaleString('en-US')})`;
+                                    if(!cart[cName]) cart[cName] = { qty: 0, price: parseInt(pInput) };
+                                    cart[cName].qty++; card.classList.remove('controls-open'); updateCartSidebar();
+                                }
+                            });
+                        } else {
+                            card.querySelector('.plus').addEventListener('click', (e) => { 
+                                e.stopPropagation(); 
+                                if(Object.keys(cart).length === 0) startOrderRecording(); // بدأ التسجيل من أول صنف
+                                if(!cart[item.name]) cart[item.name] = { qty: 0, price: item.price };
+                                cart[item.name].qty++; card.querySelector('.qty-num').innerText = cart[item.name].qty; updateCartSidebar(); 
+                            });
+                            card.querySelector('.minus').addEventListener('click', (e) => { 
+                                e.stopPropagation(); 
+                                if(cart[item.name] && cart[item.name].qty > 0) { 
+                                    cart[item.name].qty--; if(cart[item.name].qty === 0) { delete cart[item.name]; card.classList.remove('controls-open'); } 
+                                    card.querySelector('.qty-num').innerText = cart[item.name] ? cart[item.name].qty : 0; updateCartSidebar(); 
+                                } 
+                            });
+                        }
+                        grid.appendChild(card);
+                    });
+                }
+                document.getElementById('category-title').innerHTML = `<span style="font-size: 1.2em; color: var(--primary); display:inline-flex; align-items:center;">${getIconHTML(category.icon)}</span> ${category.title}`;
+                document.getElementById('view-items').classList.add('active');
+                
+                const btnBack = document.getElementById('btn-back');
+                btnBack.style.opacity = '1'; btnBack.style.pointerEvents = 'auto';
+            }, 50); // زمن استجابة سريع
+        }
+
+        function goBack() {
+            navigationHistory.pop(); 
+            if (navigationHistory.length > 0) renderCurrentLevel(navigationHistory[navigationHistory.length - 1]);
+            else renderCategories();
+        }
+
+        document.addEventListener('click', (e) => { if (!e.target.closest('.square-card')) document.querySelectorAll('.square-card.controls-open').forEach(c => c.classList.remove('controls-open')); });
+
+        // ================= إدارة الفاتورة الجانبية =================
+        function updateCartSidebar() {
+            const list = document.getElementById('cart-items-list'); list.innerHTML = ''; let totalPrice = 0;
+            for (let itemName in cart) {
+                if(cart[itemName].qty > 0) {
+                    const itemTotal = cart[itemName].qty * cart[itemName].price; totalPrice += itemTotal;
+                    list.innerHTML += `
+                    <div class="cart-item-row">
+                        <div class="cart-item-actions">
+                            <button class="modal-qty-btn" onclick="updateCartItemModal('${itemName}', 1)">+</button>
+                            <span style="font-weight:900;">${cart[itemName].qty}</span>
+                            <button class="modal-qty-btn" onclick="updateCartItemModal('${itemName}', -1)">-</button>
+                        </div>
+                        <span class="cart-item-name">${itemName}</span>
+                        <span class="cart-item-price">${itemTotal.toLocaleString('en-US')}</span>
+                    </div>`;
+                }
+            }
+            
+            let finalTotal = totalPrice + deliveryFee;
+            document.getElementById('cart-total-price').innerText = `${finalTotal.toLocaleString('en-US')} S.P`;
+            
+            const dfDisp = document.getElementById('delivery-fee-display');
+            if(deliveryFee > 0) { dfDisp.style.display = 'flex'; document.getElementById('delivery-fee-val').innerText = deliveryFee.toLocaleString('en-US'); }
+            else { dfDisp.style.display = 'none'; }
+            
+            document.querySelectorAll('.square-card').forEach(card => {
+                const nameEl = card.querySelector('.card-name');
+                if(nameEl) {
+                    const iName = nameEl.innerText;
+                    const qty = cart[iName] ? cart[iName].qty : 0;
+                    if(card.querySelector('.qty-num')) card.querySelector('.qty-num').innerText = qty;
+                    if(card.querySelector('.added-badge')) card.querySelector('.added-badge').innerText = qty;
+                    if(qty > 0) card.classList.add('has-items'); else { card.classList.remove('has-items'); card.classList.remove('controls-open'); }
+                }
+            });
+            return finalTotal;
+        }
+
+        window.updateCartItemModal = function(itemName, change) {
+            if(cart[itemName]) { cart[itemName].qty += change; if(cart[itemName].qty <= 0) delete cart[itemName]; updateCartSidebar(); }
+        };
+
+        function setOrderType(type) { 
+            selectedOrderType = type; 
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected')); 
+            document.getElementById(`btn-${type}`).classList.add('selected'); 
+            
+            if(type === 'delivery') {
+                let fee = prompt("أدخل سعر التوصيل بالليرة السورية:");
+                if(fee && !isNaN(fee)) {
+                    deliveryFee = parseInt(fee);
+                } else {
+                    document.getElementById('btn-delivery').classList.remove('selected');
+                    selectedOrderType = null; deliveryFee = 0;
+                }
+            } else { deliveryFee = 0; }
+            updateCartSidebar();
+        }
+
+        // ================= طباعة وحفظ الطلب =================
+        function processOrder() {
+            if (Object.keys(cart).length === 0) { alert('الفاتورة فارغة!'); return; }
+            if (!selectedOrderType) { alert('الرجاء تحديد نوع الطلب (استلام أو توصيل) 🛵'); return; }
+            
+            const customerNameInput = document.getElementById('customer-name').value.trim();
+            const notesInput = document.getElementById('order-notes').value.trim();
+            const orderTotal = updateCartSidebar();
+            const orderId = `Order_${Date.now()}`;
+            const currentDateStr = new Date().toLocaleDateString('en-US');
+            const currentTimeStr = new Date().toLocaleTimeString('en-US');
+            
+            const orderDataToSave = {
+                id: orderId,
+                date: `${currentDateStr} - ${currentTimeStr}`,
+                timestamp: Date.now(),
+                type: selectedOrderType === 'pickup' ? 'استلام' : 'توصيل',
+                customer: customerNameInput || 'بدون اسم',
+                notes: notesInput,
+                deliveryFee: deliveryFee,
+                items: { ...cart },
+                total: orderTotal,
+                audioBlob: null,
+                isDeleted: false,
+                shiftClosed: false // لم يغلق صندوقه بعد
+            };
+
+            // إيقاف التسجيل وحفظ
+            if (isRecording && mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.onstop = () => {
+                    orderDataToSave.audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    saveToDB(orderDataToSave);
+                    audioChunks = []; isRecording = false; document.getElementById('recording-indicator').style.display = 'none';
+                };
+                mediaRecorder.stop();
+            } else { saveToDB(orderDataToSave); }
+
+            // تجهيز الطباعة
+            const receiptZone = document.getElementById('printable-receipt');
+            let itemsRowsHTML = ''; 
+            for (let item in cart) if(cart[item].qty > 0) itemsRowsHTML += `<tr><td class="print-qty">${cart[item].qty}</td><td class="print-name">${item}</td></tr>`;
+            
+            let notesHTML = notesInput ? `<div class="print-notes"><strong>ملاحظات الطلب:</strong><br>${notesInput.replace(/\n/g, '<br>')}</div>` : '';
+            let deliveryHTML = deliveryFee > 0 ? `<div style="font-size:18px; font-weight:900; border-top:1px dashed #000; padding-top:5px;">سعر التوصيل: ${deliveryFee.toLocaleString('en-US')}</div>` : '';
+
+            receiptZone.innerHTML = `<div class="print-header">Fly Chicken</div>
+            <div class="print-info-row"><strong>رقم الطلب:&nbsp;</strong> ${orderId.slice(-5)}</div>
+            <div class="print-info-row"><strong>النوع:&nbsp;</strong> ${selectedOrderType === 'pickup' ? 'استلام' : 'توصيل'}</div>
+            <div class="print-info-row"><strong>الاسم:&nbsp;</strong> ${customerNameInput || '............'}</div>
+            <table class="print-table"><thead><tr><th style="text-align:center;">الكمية</th><th>الصنف</th></tr></thead><tbody>${itemsRowsHTML}</tbody></table>
+            ${deliveryHTML}
+            <div class="print-footer">الإجمالي: ${orderTotal.toLocaleString('en-US')} S.P</div>
+            ${notesHTML}`;
+            
+            // الطباعة الصامتة إذا تم اختيار طابعة
+            if(ipcRenderer) {
+                const savedPrinter = localStorage.getItem('selectedPrinter');
+                if(savedPrinter) {
+                    ipcRenderer.send('print-silent', savedPrinter);
+                } else { window.print(); }
+            } else { window.print(); }
+
+            // التصفير للطلب التالي
+            setTimeout(() => {
+                cart = {}; deliveryFee = 0; updateCartSidebar(); selectedOrderType = null;
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected')); 
+                document.getElementById('customer-name').value = '';
+                document.getElementById('order-notes').value = '';
+            }, 300);
+        }
+
+        function saveToDB(orderData) {
+            if(db) { const tx = db.transaction(["orders"], "readwrite"); tx.objectStore("orders").add(orderData); }
+        }
+
+        // ================= الطابعات =================
+        function loadPrinters() {
+            if(ipcRenderer) {
+                ipcRenderer.invoke('get-printers').then(printers => {
+                    const select = document.getElementById('printer-select');
+                    select.innerHTML = '<option value="">الطابعة الافتراضية للنظام</option>';
+                    printers.forEach(p => { select.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
+                    const savedPrinter = localStorage.getItem('selectedPrinter');
+                    if(savedPrinter) select.value = savedPrinter;
+                    select.onchange = () => localStorage.setItem('selectedPrinter', select.value);
+                });
+            }
+        }
+
+        // ================= الإدارة والورديات =================
+        function openDashboard() { document.getElementById('dashboard-modal').classList.add('active'); loadDashboardData(); }
+        function closeDashboard() { document.getElementById('dashboard-modal').classList.remove('active'); }
+        
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function loadDashboardData() {
+            if (!db) return;
+            // جلب الأوردرات النشطة بالوردية الحالية
+            const tx = db.transaction(["orders", "shifts"], "readonly");
+            const ordersReq = tx.objectStore("orders").getAll();
+            const shiftsReq = tx.objectStore("shifts").getAll();
+            
+            ordersReq.onsuccess = e => {
+                const allOrders = e.target.result;
+                const currentShiftOrders = allOrders.filter(o => !o.shiftClosed); // طلبات لم تغلق بعد
+                
+                let validSales = 0; let validCount = 0; let deletedSales = 0;
+                const activeList = document.getElementById('active-orders-list'); activeList.innerHTML = '';
+                const trashList = document.getElementById('trash-orders-list'); trashList.innerHTML = '';
+
+                currentShiftOrders.sort((a,b) => b.timestamp - a.timestamp).forEach(order => {
+                    let itemsHtml = ''; for (const [itemName, itemData] of Object.entries(order.items)) itemsHtml += `<span class="order-items-badge">${itemData.qty} × ${itemName}</span>`;
+                    let audioHtml = order.audioBlob ? `<audio controls class="order-audio" src="${URL.createObjectURL(order.audioBlob)}" style="height:35px;"></audio>` : `<span style="color:#777; font-size:0.9rem;">بدون صوت</span>`;
+
+                    if(order.isDeleted) {
+                        deletedSales += order.total;
+                        trashList.innerHTML += `
+                        <div class="order-row trash-row">
+                            <div class="order-info"><h4><i class="fas fa-times-circle"></i> ${order.customer} (${order.total.toLocaleString('en-US')})</h4>
+                            <p>${order.date} | الملاحظات: ${order.notes || 'لا يوجد'}</p><div>${itemsHtml}</div></div>
+                            <div>${audioHtml}</div>
+                        </div>`;
+                    } else {
+                        validSales += order.total; validCount++;
+                        activeList.innerHTML += `
+                        <div class="order-row">
+                            <div class="order-info"><h4><i class="fas fa-check-circle" style="color:var(--success)"></i> ${order.customer} (${order.total.toLocaleString('en-US')})</h4>
+                            <p>${order.date} | الملاحظات: ${order.notes || 'لا يوجد'}</p><div>${itemsHtml}</div></div>
+                            <div style="display:flex; align-items:center; gap:15px;">${audioHtml}<button class="btn-delete-order" onclick="deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button></div>
+                        </div>`;
+                    }
+                });
+
+                document.getElementById('stat-total-sales').innerText = validSales.toLocaleString('en-US');
+                document.getElementById('stat-total-orders').innerText = validCount;
+                document.getElementById('stat-deleted-sales').innerText = deletedSales.toLocaleString('en-US');
+                
+                if(activeList.innerHTML === '') activeList.innerHTML = '<p style="color:#aaa;">لا يوجد طلبات في الوردية الحالية.</p>';
+                if(trashList.innerHTML === '') trashList.innerHTML = '<p style="color:#aaa;">سلة المهملات فارغة.</p>';
+            };
+
+            // جلب الصناديق القديمة
+            shiftsReq.onsuccess = e => {
+                const shifts = e.target.result;
+                const shiftsList = document.getElementById('shifts-list'); shiftsList.innerHTML = '';
+                shifts.sort((a,b) => b.timestamp - a.timestamp).forEach(shift => {
+                    shiftsList.innerHTML += `
+                    <div class="order-row">
+                        <div class="order-info">
+                            <h4><i class="fas fa-archive"></i> إغلاق يوم: ${shift.date}</h4>
+                            <p style="font-size:1.1rem; color:#fff; margin-top:5px;">
+                                المبيعات الصافية: <span style="color:var(--success); font-weight:bold;">${shift.totalSales.toLocaleString('en-US')} S.P</span> | 
+                                المحذوف: <span style="color:var(--danger);">${shift.deletedSales.toLocaleString('en-US')} S.P</span> | 
+                                عدد الطلبات: ${shift.ordersCount}
+                            </p>
+                        </div>
+                    </div>`;
+                });
+                if(shiftsList.innerHTML === '') shiftsList.innerHTML = '<p style="color:#aaa;">لا يوجد صناديق مغلقة سابقاً.</p>';
+            };
+        }
+
+        window.deleteOrder = function(orderId) {
+            if(!confirm("إلغاء الطلب ونقله للمهملات؟")) return;
+            const tx = db.transaction(["orders"], "readwrite");
+            const store = tx.objectStore("orders");
+            store.get(orderId).onsuccess = e => {
+                const order = e.target.result;
+                order.isDeleted = true;
+                store.put(order);
+                tx.oncomplete = () => loadDashboardData();
+            };
+        }
+
+        // إغلاق الصندوق وتصفيره للوردية الجديدة
+        window.closeShiftProcess = function() {
+            if(!confirm("هل أنت متأكد من إغلاق الصندوق؟ سيتم حفظ المبيعات وتصفير العداد للوردية القادمة.")) return;
+            
+            const tx = db.transaction(["orders", "shifts"], "readwrite");
+            const ordersStore = tx.objectStore("orders");
+            const shiftsStore = tx.objectStore("shifts");
+
+            ordersStore.getAll().onsuccess = e => {
+                const allOrders = e.target.result;
+                const unclosed = allOrders.filter(o => !o.shiftClosed);
+                if(unclosed.length === 0) { alert("الصندوق فارغ، لا يوجد مبيعات لإغلاقها."); return; }
+
+                let totalSales = 0; let deletedSales = 0;
+                unclosed.forEach(o => {
+                    if(!o.isDeleted) totalSales += o.total; else deletedSales += o.total;
+                    o.shiftClosed = true; // علامة أن الطلب تم إغلاقه بالصندوق
+                    ordersStore.put(o);
+                });
+
+                const shiftData = {
+                    id: `Shift_${Date.now()}`,
+                    timestamp: Date.now(),
+                    date: new Date().toLocaleString('en-US'),
+                    totalSales: totalSales,
+                    deletedSales: deletedSales,
+                    ordersCount: unclosed.filter(o => !o.isDeleted).length
+                };
+                
+                shiftsStore.add(shiftData);
+                tx.oncomplete = () => { alert("تم إغلاق الصندوق بنجاح وحفظ الوردية!"); loadDashboardData(); };
+            }
+        }
+    </script>
+</body>
+</html>
