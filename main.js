@@ -35,15 +35,13 @@ ipcMain.handle('get-printers', async () => {
   return await mainWindow.webContents.getPrintersAsync();
 });
 
-// استقبال أمر الطباعة الصامتة
+// استقبال أمر الطباعة الصامتة (تم التعديل لدعم طابعات 80mm بشكل صحيح)
 ipcMain.on('print-silent', (event, printerName) => {
   mainWindow.webContents.print({ 
     silent: true, 
     printBackground: true, 
     deviceName: printerName || undefined,
-    // التعديلات الجوهرية لحل مشكلة الورقة البيضاء في طابعات 80mm
-    margins: { marginType: 'none' }, 
-    pageSize: { width: 80000, height: 300000 } // 80mm بالميكرون
+    margins: { marginType: 'none' } // يمنع النظام من إضافة هوامش تخرب الفاتورة
   }, (success, errorType) => {
     if (!success) console.error("خطأ في الطباعة:", errorType);
   });
