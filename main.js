@@ -40,7 +40,10 @@ ipcMain.on('print-silent', (event, printerName) => {
   mainWindow.webContents.print({ 
     silent: true, 
     printBackground: true, 
-    deviceName: printerName || undefined 
+    deviceName: printerName || undefined,
+    // التعديلات الجوهرية لحل مشكلة الورقة البيضاء في طابعات 80mm
+    margins: { marginType: 'none' }, 
+    pageSize: { width: 80000, height: 300000 } // 80mm بالميكرون
   }, (success, errorType) => {
     if (!success) console.error("خطأ في الطباعة:", errorType);
   });
