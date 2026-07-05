@@ -143,15 +143,27 @@
         .menu-item-edit-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background: var(--surface); padding: 10px; border-radius: 8px; border: 1px solid #333;}
         .menu-item-edit-row input { background: var(--bg-black); color: white; border: 1px solid #555; padding: 8px; border-radius: 5px; font-weight: bold; flex: 1; min-width: 150px;}
 
-        /* ================= حل مشكلة الطباعة الجذري ================= */
+        /* ================= حل مشكلة الطباعة الجذري للطابعات الحرارية ================= */
         .receipt-print-zone { display: none; }
         @media print {
-            /* إخفاء كامل الواجهة التفاعلية إخفاءً تاماً وليس بصرياً فقط */
-            body > *:not(.receipt-print-zone) { display: none !important; }
-            body, html { background: #fff !important; color: #000 !important; height: auto !important; margin: 0 !important; padding: 0 !important; display: block !important; }
+            @page { margin: 0; padding: 0; }
+            body, html { width: 100%; height: 100%; background: #fff !important; margin: 0 !important; padding: 0 !important; }
             
-            .receipt-print-zone { display: block !important; position: static !important; width: 80mm; margin: 0 auto; padding: 2mm 5mm; direction: rtl; }
-            .receipt-print-zone * { visibility: visible !important; color: #000 !important; }
+            /* إخفاء بصري كامل بدل display: none لعدم انهيار ارتفاع الصفحة */
+            body * { visibility: hidden; }
+            
+            #printable-receipt, #printable-receipt * { visibility: visible; color: #000 !important; }
+            
+            #printable-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 78mm; /* أقل بـ 2 ملم من 80 لتجنب القص الجانبي */
+                margin: 0;
+                padding: 2mm;
+                direction: rtl;
+                display: block !important;
+            }
             
             .print-header { text-align: center; font-size: 24px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 10px; }
             .print-info-row { font-size: 16px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
@@ -196,7 +208,6 @@
         </main>
     </div>
 
-    <!-- الشريط الجانبي (الفاتورة) -->
     <div class="sidebar">
         <div class="sidebar-header"><i class="fas fa-receipt"></i> الفاتورة الحالية</div>
         <div class="cart-items-list" id="cart-items-list"></div>
@@ -211,7 +222,6 @@
                 <button class="type-btn" id="btn-delivery" onclick="setOrderType('delivery')">توصيل 🛵</button>
             </div>
             
-            <!-- حقل إدخال سعر التوصيل (يظهر فقط عند التوصيل) -->
             <div id="delivery-input-container" style="display:none; margin-bottom: 10px;">
                 <input type="number" id="delivery-fee-input" class="customer-name-input" placeholder="أدخل مبلغ التوصيل (بالليرة)..." oninput="updateCartSidebar()" style="border-color:#3498db;">
             </div>
@@ -224,7 +234,6 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم المدير -->
     <div class="dashboard-overlay" id="dashboard-modal">
         <div class="dashboard-modal">
             <div class="dash-header">
@@ -242,7 +251,6 @@
             </div>
             <div class="dash-content">
                 
-                <!-- الإحصائيات -->
                 <div id="tab-stats" class="tab-pane active">
                     <div class="stats-grid">
                         <div class="stat-card success">
@@ -268,32 +276,27 @@
                     </div>
                 </div>
                 
-                <!-- طلبات الصالة -->
                 <div id="tab-active" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">طلبات الوردية (الصالة والسفري)</h2>
                     <div id="active-pickup-list"></div>
                 </div>
 
-                <!-- طلبات التوصيل الديليفري -->
                 <div id="tab-delivery" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: #3498db;">طلبات الوردية (ديليفري فقط)</h2>
                     <div id="active-delivery-list"></div>
                 </div>
 
-                <!-- المهملات -->
                 <div id="tab-trash" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--danger);">الطلبات المحذوفة للوردية</h2>
                     <div id="trash-orders-list"></div>
                 </div>
 
-                <!-- الصناديق المغلقة والتفاصيل -->
                 <div id="tab-shifts" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">أرشيف الصناديق المغلقة</h2>
                     <div id="shifts-list-container"></div>
                     <div id="shift-detail-view" class="shift-detail-box" style="display:none;"></div>
                 </div>
 
-                <!-- إدارة المنيو الديناميكي -->
                 <div id="tab-menu" class="tab-pane">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
                         <h2 style="color: var(--primary);">إدارة الأصناف والأسعار</h2>
@@ -302,7 +305,6 @@
                     <div id="menu-editor-container" style="background:var(--surface-light); padding:15px; border-radius:12px; max-height: 60vh; overflow-y: auto;"></div>
                 </div>
 
-                <!-- الإعدادات -->
                 <div id="tab-settings" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">إعدادات النظام</h2>
                     <div class="settings-row">
@@ -319,7 +321,6 @@
         </div>
     </div>
 
-    <!-- منطقة الطباعة (مخفية إلا أثناء الطباعة) -->
     <div class="receipt-print-zone" id="printable-receipt"></div>
 
     <script>
@@ -589,15 +590,22 @@
             <div class="print-footer">الإجمالي الكلي: ${orderTotal.toLocaleString('en-US')} S.P</div>
             ${notesHTML}`;
             
-            if(ipcRenderer) {
-                const savedPrinter = localStorage.getItem('selectedPrinter');
-                if(savedPrinter) ipcRenderer.send('print-silent', savedPrinter); else window.print();
-            } else { window.print(); }
-
+            // إضافة تأخير صغير لإعطاء DOM وقت ليرسم الفاتورة بالـ HTML قبل أخذ لقطة الطباعة
             setTimeout(() => {
-                cart = {}; deliveryFee = 0; document.getElementById('delivery-fee-input').value = ''; updateCartSidebar();
-                document.getElementById('customer-name').value = ''; document.getElementById('order-notes').value = '';
-            }, 300);
+                if(ipcRenderer) {
+                    const savedPrinter = localStorage.getItem('selectedPrinter');
+                    if(savedPrinter) ipcRenderer.send('print-silent', savedPrinter);
+                    else ipcRenderer.send('print-silent', '');
+                } else { 
+                    window.print(); 
+                }
+
+                // تأخير تفريغ الحقول لحين إرسال الفاتورة بالكامل
+                setTimeout(() => {
+                    cart = {}; deliveryFee = 0; document.getElementById('delivery-fee-input').value = ''; updateCartSidebar();
+                    document.getElementById('customer-name').value = ''; document.getElementById('order-notes').value = '';
+                }, 1000);
+            }, 150);
         }
 
         function saveToDB(orderData) { if(db) { const tx = db.transaction(["orders"], "readwrite"); tx.objectStore("orders").add(orderData); } }
