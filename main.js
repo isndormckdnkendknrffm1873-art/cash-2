@@ -9,7 +9,7 @@ function createWindow () {
     height: 800,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true, // تفعيل الوصول للنظام لتعريف الطابعات
+      nodeIntegration: true, 
       contextIsolation: false
     }
   });
