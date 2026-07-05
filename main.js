@@ -35,14 +35,19 @@ ipcMain.handle('get-printers', async () => {
   return await mainWindow.webContents.getPrintersAsync();
 });
 
-// استقبال أمر الطباعة الصامتة (تم التعديل لدعم طابعات 80mm بشكل صحيح)
+// استقبال أمر الطباعة الصامتة
 ipcMain.on('print-silent', (event, printerName) => {
-  mainWindow.webContents.print({ 
-    silent: true, 
-    printBackground: true, 
-    deviceName: printerName || undefined,
-    margins: { marginType: 'none' } // يمنع النظام من إضافة هوامش تخرب الفاتورة
-  }, (success, errorType) => {
+  const printOptions = {
+    silent: true,
+    printBackground: true,
+    margins: { marginType: 'none' } // مهم جداً للطابعات الحرارية
+  };
+
+  if (printerName) {
+    printOptions.deviceName = printerName;
+  }
+
+  mainWindow.webContents.print(printOptions, (success, errorType) => {
     if (!success) console.error("خطأ في الطباعة:", errorType);
   });
 });
