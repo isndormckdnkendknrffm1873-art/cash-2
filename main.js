@@ -1,31 +1,26 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-
-let mainWindow;
-
-function createWindow () {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    autoHideMenuBar: true,
-    webPreferences: {
-      nodeIntegration: true, 
-      contextIsolation: false
+{
+  "name": "fly-chicken-pos",
+  "version": "1.2.0",
+  "description": "Advanced POS System for Fly Chicken",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "pack": "electron-builder --dir"
+  },
+  "author": "New Syrian",
+  "build": {
+    "appId": "com.newsyrian.flychickenpos",
+    "productName": "Fly Chicken POS",
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "dist"
     }
-  });
-
-  mainWindow.loadFile('index.html');
-  mainWindow.maximize();
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.9.1"
+  }
 }
-
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
