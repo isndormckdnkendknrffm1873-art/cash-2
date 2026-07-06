@@ -40,10 +40,11 @@ ipcMain.on('print-silent', (event, printerName) => {
   const printOptions = {
     silent: true,
     printBackground: true,
-    margins: { marginType: 'none' } // مهم جداً للطابعات الحرارية
+    margins: { marginType: 'none' } // يمنع الهوامش البيضاء العشوائية
   };
 
-  if (printerName) {
+  // إذا كان هناك طابعة محددة واسمها ليس فارغاً
+  if (printerName && printerName.trim() !== '') {
     printOptions.deviceName = printerName;
   }
 
