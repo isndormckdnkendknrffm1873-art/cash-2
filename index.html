@@ -72,7 +72,7 @@
         .custom-price-input { width: 100%; height: 40px; background: var(--bg-black); border: 2px solid var(--border-thick); border-radius: 10px; padding: 0 10px; font-size: 1.1rem; font-weight: 800; color: white; text-align: center; margin-left: 10px; }
         .btn-add-custom { background: var(--primary); color: white; border: none; height: 40px; padding: 0 15px; border-radius: 10px; font-weight: 900; cursor: pointer; }
 
-        /* ================= الفاتورة ================= */
+        /* ================= الفاتورة (الشريط الجانبي) ================= */
         .sidebar-header { font-size: 1.5rem; font-weight: 900; border-bottom: 2px solid var(--surface-light); padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
         .cart-items-list { flex: 1; overflow-y: auto; background: var(--bg-black); border-radius: 15px; padding: 10px; border: 1px solid var(--surface-light); margin-bottom: 10px; }
         .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #333; gap: 8px; }
@@ -140,21 +140,42 @@
         .menu-item-edit-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background: var(--surface); padding: 10px; border-radius: 8px; border: 1px solid #333;}
         .menu-item-edit-row input { background: var(--bg-black); color: white; border: 1px solid #555; padding: 8px; border-radius: 5px; font-weight: bold; flex: 1; min-width: 150px;}
 
-        /* ================= حل مشكلة الطباعة (الإخفاء التام) ================= */
+        /* ================= تنسيقات الفاتورة المخصصة (80mm) ================= */
         .receipt-print-zone { display: none; }
         
+        .receipt-container { background: #ffffff; width: 78mm; padding: 2mm 4mm; color: #000000; margin: 0 auto; direction: rtl; }
+        .receipt-container .text-center { text-align: center; }
+        .receipt-container .font-bold { font-weight: 900; }
+        .receipt-container .brand-name { font-size: 26px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 10px; }
+        .receipt-container .info-row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+        .receipt-container .info-row span { word-break: break-word; }
+        
+        .receipt-container table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
+        .receipt-container th { border-bottom: 2px solid #000; padding-bottom: 5px; font-size: 15px; font-weight: 900; text-align: right; }
+        .receipt-container td { padding: 8px 0; border-bottom: 1px dashed #000; font-size: 16px; font-weight: 800; vertical-align: top; }
+        
+        .receipt-container .col-qty { width: 15%; text-align: center; font-size: 18px; }
+        .receipt-container .col-name { width: 55%; text-align: right; padding-right: 5px; line-height: 1.3; }
+        .receipt-container .col-price { width: 30%; text-align: left; }
+
+        .receipt-container .notes-box { border: 2px dashed #000; padding: 10px; margin-top: 15px; font-size: 16px; font-weight: 800; border-radius: 6px; line-height: 1.4; word-wrap: break-word; }
+        .receipt-container .totals-section { margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+        .receipt-container .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; margin-bottom: 5px; }
+        .receipt-container .grand-total { font-size: 22px; font-weight: 900; margin-top: 5px; border-top: 2px dashed #000; padding-top: 5px; }
+        .receipt-container .footer-text { text-align: center; font-size: 14px; font-weight: 700; margin-top: 15px; }
+
         @media print {
             @page { margin: 0; padding: 0; }
             
-            /* إخفاء الواجهة بالكامل بدل visibility لمنع ظهور المساحات البيضاء */
+            /* إخفاء الواجهة بالكامل */
             .main-content, .sidebar, #recording-indicator, .dashboard-overlay {
                 display: none !important; 
             }
             
             /* إعادة ضبط الجسم ليتناسب طوله مع الفاتورة فقط */
             body, html { 
-                width: 78mm !important; /* مناسب لـ 80mm */
-                height: auto !important; /* هذا السطر يمنع الورق الطويل الفاضي */
+                width: 78mm !important; 
+                height: auto !important; 
                 background: #fff !important; 
                 color: #000 !important;
                 margin: 0 !important; 
@@ -166,25 +187,9 @@
             .receipt-print-zone {
                 display: block !important;
                 width: 100% !important;
-                padding: 2mm !important;
-                direction: rtl !important;
             }
             
             .receipt-print-zone * { color: #000 !important; }
-            
-            /* تنسيقات الفاتورة */
-            .print-header { text-align: center; font-size: 24px; font-weight: 900; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 10px; }
-            .print-info-row { font-size: 16px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-            .print-table { display: table !important; width: 100% !important; border-collapse: collapse; margin-bottom: 10px; }
-            .print-table thead { display: table-header-group !important; }
-            .print-table tbody { display: table-row-group !important; }
-            .print-table tr { display: table-row !important; }
-            .print-table th { display: table-cell !important; border-bottom: 2px solid #000; padding: 5px 0; font-size: 14px; text-align: right; }
-            .print-table td { display: table-cell !important; padding: 8px 0; border-bottom: 1px dashed #000; font-size: 18px; font-weight: 900; }
-            .print-qty { text-align: center; font-size: 22px !important; font-weight: 900; border: 2px solid #000; width: 45px; }
-            .print-name { padding-right: 12px; }
-            .print-notes { margin-top: 10px; padding: 8px; border: 2px dashed #000; font-size: 18px; font-weight: 900; width: 100%; word-wrap: break-word; line-height: 1.4; display: block; }
-            .print-footer { font-size: 18px; font-weight: 900; text-align: center; border-top: 2px dashed #000; padding-top: 10px; margin-top: 5px;}
         }
 
         #recording-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 9999; display: none; box-shadow: 0 0 15px rgba(231, 76, 60, 0.5); animation: pulse 1.5s infinite; }
@@ -195,7 +200,6 @@
 
     <div id="recording-indicator"><i class="fas fa-microphone"></i> جاري تسجيل الطلب...</div>
 
-    <!-- حاويات الواجهة الأساسية -->
     <div class="main-content">
         <header class="header">
             <button class="btn-control" id="btn-back" onclick="goBack()" style="opacity: 0; pointer-events: none;"><i class="fas fa-arrow-right"></i> رجوع</button>
@@ -217,7 +221,6 @@
         </main>
     </div>
 
-    <!-- الشريط الجانبي (الفاتورة) -->
     <div class="sidebar">
         <div class="sidebar-header"><i class="fas fa-receipt"></i> الفاتورة الحالية</div>
         <div class="cart-items-list" id="cart-items-list"></div>
@@ -232,7 +235,6 @@
                 <button class="type-btn" id="btn-delivery" onclick="setOrderType('delivery')">توصيل 🛵</button>
             </div>
             
-            <!-- حقل إدخال سعر التوصيل (يظهر فقط عند التوصيل) -->
             <div id="delivery-input-container" style="display:none; margin-bottom: 10px;">
                 <input type="number" id="delivery-fee-input" class="customer-name-input" placeholder="أدخل مبلغ التوصيل (بالليرة)..." oninput="updateCartSidebar()" style="border-color:#3498db;">
             </div>
@@ -245,7 +247,6 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم المدير -->
     <div class="dashboard-overlay" id="dashboard-modal">
         <div class="dashboard-modal">
             <div class="dash-header">
@@ -263,7 +264,6 @@
             </div>
             <div class="dash-content">
                 
-                <!-- الإحصائيات -->
                 <div id="tab-stats" class="tab-pane active">
                     <div class="stats-grid">
                         <div class="stat-card success">
@@ -289,32 +289,27 @@
                     </div>
                 </div>
                 
-                <!-- طلبات الصالة -->
                 <div id="tab-active" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">طلبات الوردية (الصالة والسفري)</h2>
                     <div id="active-pickup-list"></div>
                 </div>
 
-                <!-- طلبات التوصيل الديليفري -->
                 <div id="tab-delivery" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: #3498db;">طلبات الوردية (ديليفري فقط)</h2>
                     <div id="active-delivery-list"></div>
                 </div>
 
-                <!-- المهملات -->
                 <div id="tab-trash" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--danger);">الطلبات المحذوفة للوردية</h2>
                     <div id="trash-orders-list"></div>
                 </div>
 
-                <!-- الصناديق المغلقة والتفاصيل -->
                 <div id="tab-shifts" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">أرشيف الصناديق المغلقة</h2>
                     <div id="shifts-list-container"></div>
                     <div id="shift-detail-view" class="shift-detail-box" style="display:none;"></div>
                 </div>
 
-                <!-- إدارة المنيو الديناميكي -->
                 <div id="tab-menu" class="tab-pane">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
                         <h2 style="color: var(--primary);">إدارة الأصناف والأسعار</h2>
@@ -323,7 +318,6 @@
                     <div id="menu-editor-container" style="background:var(--surface-light); padding:15px; border-radius:12px; max-height: 60vh; overflow-y: auto;"></div>
                 </div>
 
-                <!-- الإعدادات -->
                 <div id="tab-settings" class="tab-pane">
                     <h2 style="margin-bottom: 15px; color: var(--primary);">إعدادات النظام</h2>
                     <div class="settings-row">
@@ -337,7 +331,6 @@
         </div>
     </div>
 
-    <!-- منطقة الطباعة -->
     <div class="receipt-print-zone" id="printable-receipt"></div>
 
     <script>
@@ -557,7 +550,7 @@
             updateCartSidebar();
         }
 
-        // ================= الطباعة والاعتماد =================
+        // ================= الطباعة والاعتماد (تم دمج التصميم الجديد هنا) =================
         function processOrder() {
             if (Object.keys(cart).length === 0) { alert('الفاتورة فارغة!'); return; }
             if (selectedOrderType === 'delivery' && document.getElementById('delivery-fee-input').value === '') { alert('الرجاء إدخال مبلغ التوصيل.'); return; }
@@ -584,21 +577,77 @@
                 mediaRecorder.stop();
             } else { saveToDB(orderDataToSave); }
 
-            // تجهيز الفاتورة للطباعة
+            // ================= بناء الفاتورة بالتصميم الجديد (80mm) =================
             const receiptZone = document.getElementById('printable-receipt');
-            let itemsRowsHTML = ''; 
-            for (let item in cart) if(cart[item].qty > 0) itemsRowsHTML += `<tr><td class="print-qty">${cart[item].qty}</td><td class="print-name">${item}<br><small style="font-size:12px;">(${cart[item].price.toLocaleString('en-US')})</small></td></tr>`;
             
-            let notesHTML = notesInput ? `<div class="print-notes"><strong>ملاحظات:</strong><br>${notesInput.replace(/\n/g, '<br>')}</div>` : '';
-            let deliveryHTML = selectedOrderType === 'delivery' ? `<div style="font-size:18px; font-weight:900; border-top:2px dashed #000; padding-top:5px; margin-top:10px;">أجور التوصيل: ${deliveryFee.toLocaleString('en-US')}</div>` : '';
+            let itemsRowsHTML = ''; 
+            for (let item in cart) {
+                if(cart[item].qty > 0) {
+                    itemsRowsHTML += `
+                    <tr>
+                        <td class="col-qty font-bold">${cart[item].qty}</td>
+                        <td class="col-name">${item}</td>
+                        <td class="col-price">${cart[item].price.toLocaleString('en-US')}</td>
+                    </tr>`;
+                }
+            }
+            
+            let notesHTML = notesInput ? `
+            <div class="notes-box">
+                <strong>ملاحظات المطبخ:</strong><br>
+                ${notesInput.replace(/\n/g, '<br>')}
+            </div>` : '';
 
-            receiptZone.innerHTML = `<div class="print-header">Fly Chicken POS</div>
-            <div class="print-info-row"><span><strong>الطلب:</strong> ${orderId.slice(-5)}</span> <span><strong>${selectedOrderType === 'pickup' ? 'استلام' : 'توصيل 🛵'}</strong></span></div>
-            <div class="print-info-row" style="margin-bottom:10px;"><strong>الزبون:</strong> ${customerNameInput || '..................'}</div>
-            <table class="print-table"><thead><tr><th style="width:45px; text-align:center;">الكمية</th><th>الصنف (السعر)</th></tr></thead><tbody>${itemsRowsHTML}</tbody></table>
-            ${deliveryHTML}
-            <div class="print-footer">الإجمالي الكلي: ${orderTotal.toLocaleString('en-US')} S.P</div>
-            ${notesHTML}`;
+            let deliveryHTML = selectedOrderType === 'delivery' ? `
+            <div class="total-row">
+                <span>أجور التوصيل:</span>
+                <span>${deliveryFee.toLocaleString('en-US')} S.P</span>
+            </div>` : '';
+
+            receiptZone.innerHTML = `
+            <div class="receipt-container">
+                <div class="text-center brand-name">Fly Chicken POS</div>
+                
+                <div class="info-row">
+                    <span>الطلب: ${orderId.slice(-5)}</span>
+                    <span>${selectedOrderType === 'pickup' ? 'استلام' : 'توصيل 🛵'}</span>
+                </div>
+                
+                <div class="info-row" style="margin-bottom: 10px;">
+                    <span>الزبون: ${customerNameInput || '..................'}</span>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-qty">الكمية</th>
+                            <th class="col-name">الصنف</th>
+                            <th class="col-price">السعر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsRowsHTML}
+                    </tbody>
+                </table>
+
+                ${notesHTML}
+
+                <div class="totals-section">
+                    <div class="total-row">
+                        <span>المجموع:</span>
+                        <span>${(orderTotal - deliveryFee).toLocaleString('en-US')} S.P</span>
+                    </div>
+                    ${deliveryHTML}
+                    <div class="total-row grand-total">
+                        <span>الإجمالي الكلي:</span>
+                        <span>${orderTotal.toLocaleString('en-US')} S.P</span>
+                    </div>
+                </div>
+
+                <div class="footer-text">
+                    شكراً لطلبكم من Fly Chicken!
+                </div>
+            </div>`;
             
             // إظهار نافذة الطباعة النظامية للويندوز
             setTimeout(() => {
