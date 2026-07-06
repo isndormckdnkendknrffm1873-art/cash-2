@@ -125,7 +125,6 @@
         .stat-card.delivery .value { color: #3498db; }
 
         .settings-row { background: var(--surface); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--surface-light); }
-        .settings-row select { background: var(--bg-black); color: white; padding: 10px; border-radius: 8px; border: 1px solid var(--primary); font-size: 1.1rem; width: 300px; font-weight: bold; }
         .btn-shift { background: var(--danger); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
 
         .order-row { background: var(--surface); border: 1px solid var(--surface-light); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -329,12 +328,9 @@
                     <h2 style="margin-bottom: 15px; color: var(--primary);">إعدادات النظام</h2>
                     <div class="settings-row">
                         <div>
-                            <h3 style="margin-bottom: 5px;">طابعة الفواتير (الحرارية)</h3>
-                            <p style="color:#aaa; font-size:0.9rem;">سيتم الطباعة عليها مباشرة دون نوافذ تأكيد.</p>
+                            <h3 style="margin-bottom: 5px;">نظام الطباعة</h3>
+                            <p style="color:#aaa; font-size:0.9rem;">تم تفعيل نظام الطباعة اليدوي. ستظهر نافذة الويندوز لاختيار الطابعة عند إتمام الطلب.</p>
                         </div>
-                        <select id="printer-select">
-                            <option value="">الطابعة الافتراضية للنظام</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -345,13 +341,6 @@
     <div class="receipt-print-zone" id="printable-receipt"></div>
 
     <script>
-        // ربط الواجهة مع Electron للطباعة الصامتة
-        let ipcRenderer = null;
-        try {
-            const electron = require('electron');
-            ipcRenderer = electron.ipcRenderer;
-        } catch (e) { console.log('يعمل في وضع المتصفح'); }
-
         // ================= الداتا الأساسية والمنيو =================
         const defaultMenuData = [
           { "id": "shawarma", "title": "ركن الشاورما", "icon": "svg_shawarma", "items": [ { "name": "شاورما كبيرة", "price": 20000 }, { "name": "شاورما وسط", "price": 16000 }, { "name": "شاورما صغيرة", "price": 12000 }, { "name": "شاورما دبل", "price": 27000, "bestseller": true }, { "name": "وجبة عربي", "price": 35000 }, { "name": "وجبة عربي دبل", "price": 45000, "bestseller": true }, { "name": "خرطوشة", "price": 6000 }, { "name": "فلاي شاورما", "price": 40000 }, { "name": "وجبة فرط200غ", "price": 40000 }, { "name": "وجبة خراطيش", "price": 40000 }, { "name": "فرط شاورما", "customPrice": true }, { "name": "كيلو شاورما", "price": 150000 }, { "name": "شاورما تشيز", "price": 27000 }, { "name": "فتة شاورما", "price": 30000 }, { "name": "شاورما صمون", "price": 22000 } ] },
@@ -381,7 +370,7 @@
             if (!db.objectStoreNames.contains("orders")) db.createObjectStore("orders", { keyPath: "id" }); 
             if (!db.objectStoreNames.contains("shifts")) db.createObjectStore("shifts", { keyPath: "id" }); 
         };
-        dbRequest.onsuccess = e => { db = e.target.result; loadPrinters(); };
+        dbRequest.onsuccess = e => { db = e.target.result; };
 
         window.onload = () => { initMicrophone(); renderCategories(); };
 
@@ -611,17 +600,11 @@
             <div class="print-footer">الإجمالي الكلي: ${orderTotal.toLocaleString('en-US')} S.P</div>
             ${notesHTML}`;
             
-            // إرسال أمر الطباعة
+            // إظهار نافذة الطباعة النظامية للويندوز
             setTimeout(() => {
-                if(ipcRenderer) {
-                    const savedPrinter = localStorage.getItem('selectedPrinter');
-                    ipcRenderer.send('print-silent', savedPrinter || '');
-                } else { 
-                    window.print(); 
-                }
-
-                // هام جداً: لا نمسح كود HTML الفاتورة أبداً (receiptZone.innerHTML)، نتركه حتى يتم استبداله بالطلب القادم.
-                // نقوم فقط بمسح الواجهة لتبدأ من جديد.
+                window.print();
+                
+                // تفريغ الفاتورة وتهيئتها للطلب الجديد بعد إغلاق نافذة الطباعة
                 setTimeout(() => {
                     cart = {}; 
                     deliveryFee = 0; 
@@ -629,22 +612,11 @@
                     updateCartSidebar();
                     document.getElementById('customer-name').value = ''; 
                     document.getElementById('order-notes').value = '';
-                }, 500); 
-
+                }, 500);
             }, 100); 
         }
 
         function saveToDB(orderData) { if(db) { const tx = db.transaction(["orders"], "readwrite"); tx.objectStore("orders").add(orderData); } }
-        function loadPrinters() {
-            if(ipcRenderer) {
-                ipcRenderer.invoke('get-printers').then(printers => {
-                    const select = document.getElementById('printer-select'); select.innerHTML = '<option value="">الطابعة الافتراضية للنظام</option>';
-                    printers.forEach(p => { select.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
-                    const savedPrinter = localStorage.getItem('selectedPrinter'); if(savedPrinter) select.value = savedPrinter;
-                    select.onchange = () => localStorage.setItem('selectedPrinter', select.value);
-                });
-            }
-        }
 
         // ================= الإدارة وتفاصيل الورديات (التوصيل والصالة) =================
         function openDashboard() { document.getElementById('dashboard-modal').classList.add('active'); loadDashboardData(); }
