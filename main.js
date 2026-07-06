@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -28,27 +28,4 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
-});
-
-// استقبال طلب قائمة الطابعات من الواجهة
-ipcMain.handle('get-printers', async () => {
-  return await mainWindow.webContents.getPrintersAsync();
-});
-
-// استقبال أمر الطباعة الصامتة
-ipcMain.on('print-silent', (event, printerName) => {
-  const printOptions = {
-    silent: true,
-    printBackground: true,
-    margins: { marginType: 'none' } // يمنع الهوامش البيضاء العشوائية
-  };
-
-  // إذا كان هناك طابعة محددة واسمها ليس فارغاً
-  if (printerName && printerName.trim() !== '') {
-    printOptions.deviceName = printerName;
-  }
-
-  mainWindow.webContents.print(printOptions, (success, errorType) => {
-    if (!success) console.error("خطأ في الطباعة:", errorType);
-  });
 });
