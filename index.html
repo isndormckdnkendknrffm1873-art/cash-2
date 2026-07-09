@@ -9,21 +9,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= الهوية والأداء (فاتح، ساطع، وسريع جداً) ================= */
+        /* ================= الهوية والأداء ================= */
         :root {
-            --primary: #ff6600; /* برتقالي قوي للتباين على الفاتح */
+            --primary: #ff6600; 
             --primary-hover: #e65c00;
-            --bg-main: #f0f2f5; /* رمادي فاتح جداً للخلفية */
-            --surface: #ffffff; /* أبيض ناصع للبطاقات */
+            --bg-main: #f0f2f5; 
+            --surface: #ffffff; 
             --surface-light: #f8f9fa;
-            --border-thick: #d1d5db; /* حدود واضحة */
-            --text-main: #111827; /* أسود للنصوص */
+            --border-thick: #d1d5db; 
+            --text-main: #111827; 
             --text-muted: #4b5563;
-            --success: #10b981; /* أخضر واضح */
-            --danger: #ef4444; /* أحمر واضح */
+            --success: #10b981; 
+            --danger: #ef4444; 
         }
 
-        /* إلغاء كل الحركات البطيئة للسرعة القصوى */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
         body, html { background-color: var(--bg-main); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
         
@@ -33,126 +32,124 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* ================= التخطيط الأساسي ================= */
-        .sidebar { width: 440px; background: var(--surface); border-left: 2px solid var(--border-thick); display: flex; flex-direction: column; padding: 20px; z-index: 10; box-shadow: -2px 0 10px rgba(0,0,0,0.05); }
+        .sidebar { width: 32%; min-width: 400px; max-width: 500px; background: var(--surface); border-left: 2px solid var(--border-thick); display: flex; flex-direction: column; padding: 25px; z-index: 10; box-shadow: -2px 0 10px rgba(0,0,0,0.05); }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
 
         /* ================= الترويسة ================= */
-        .header { padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-thick); background: var(--surface); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .brand-title { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; color: var(--text-main); }
+        .header { padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-thick); background: var(--surface); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .brand-title { font-size: 2.5rem; font-weight: 900; letter-spacing: 1px; color: var(--text-main); }
         .brand-title span { color: var(--primary); }
-        .header-actions { display: flex; gap: 10px; }
-        .btn-control { background: var(--surface); border: 2px solid var(--border-thick); color: var(--text-main); padding: 10px 20px; border-radius: 8px; font-size: 1.1rem; font-weight:bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .header-actions { display: flex; gap: 15px; }
+        .btn-control { background: var(--surface); border: 2px solid var(--border-thick); color: var(--text-main); padding: 12px 25px; border-radius: 8px; font-size: 1.2rem; font-weight:bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.1s;}
         .btn-control:hover { border-color: var(--primary); color: var(--primary); background: #fff5f0; }
         .btn-control:active { background: var(--primary); color: white; }
         .btn-control.danger { color: var(--danger); border-color: var(--danger); }
         .btn-control.danger:hover { background: #fef2f2; }
 
         /* ================= الشبكة ================= */
-        .view-section { flex: 1; overflow-y: auto; padding: 20px 30px; display: none; }
+        .view-section { flex: 1; overflow-y: auto; padding: 25px 40px; display: none; }
         .view-section.active { display: block; }
-        .page-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .page-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 25px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
         .page-title span { color: var(--primary); }
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; } /* تم التكبير لملء الشاشة */
 
-        .square-card { background: var(--surface); border: 2px solid var(--border-thick); border-radius: 12px; aspect-ratio: 1 / 1.15; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .square-card:hover { border-color: var(--primary); box-shadow: 0 4px 8px rgba(255,102,0,0.15); }
-        .square-card:active { background: #fff5f0; }
+        .square-card { background: var(--surface); border: 2px solid var(--border-thick); border-radius: 12px; aspect-ratio: 1 / 1.1; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .square-card:hover { border-color: var(--primary); box-shadow: 0 6px 12px rgba(255,102,0,0.15); transform: translateY(-2px); transition: 0.2s;}
         .square-card.has-items { border-color: var(--primary); background: #fff5f0; }
         
-        .card-main { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; z-index: 2; }
-        .card-icon-container { font-size: 3rem; color: var(--primary); margin-bottom: 8px; }
+        .card-main { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; z-index: 2; transition: transform 0.2s; }
+        .card-icon-container { font-size: 4rem; color: var(--primary); margin-bottom: 12px; }
         .card-icon-container svg { width: 1em; height: 1em; }
         
-        .card-name { font-size: 1.1rem; font-weight: 900; text-align: center; line-height: 1.2; color: var(--text-main); }
-        .card-price { font-size: 1.1rem; font-weight: 900; color: var(--success); margin-top: 5px; background: #ecfdf5; padding: 2px 10px; border-radius: 6px; border: 1px solid #a7f3d0; }
+        .card-name { font-size: 1.3rem; font-weight: 900; text-align: center; line-height: 1.3; color: var(--text-main); }
+        .card-price { font-size: 1.2rem; font-weight: 900; color: var(--success); margin-top: 8px; background: #ecfdf5; padding: 4px 12px; border-radius: 6px; border: 1px solid #a7f3d0; }
         
-        .square-card.controls-open .card-main { transform: translateY(-25px); }
-        .added-badge { position: absolute; top: 8px; left: 8px; background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.1rem; z-index: 5; display: none; }
+        .square-card.controls-open .card-main { transform: translateY(-30px); }
+        .added-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.3rem; z-index: 5; display: none; }
         .square-card.has-items:not(.controls-open) .added-badge { display: flex; }
 
-        .action-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: var(--surface-light); border-top: 2px solid var(--primary); display: none; justify-content: space-between; align-items: center; padding: 0 5px; z-index: 3; }
+        .action-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: var(--surface-light); border-top: 2px solid var(--primary); display: none; justify-content: space-between; align-items: center; padding: 0 10px; z-index: 3; }
         .square-card.controls-open .action-drawer { display: flex; }
-        .qty-btn { background: var(--surface); color: var(--text-main); border: 2px solid var(--border-thick); width: 35px; height: 35px; border-radius: 8px; font-size: 1.4rem; font-weight: 900; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .qty-btn { background: var(--surface); color: var(--text-main); border: 2px solid var(--border-thick); width: 45px; height: 45px; border-radius: 8px; font-size: 1.6rem; font-weight: 900; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .qty-btn:active { background: var(--primary); color: white; border-color: var(--primary); }
-        .qty-num { font-size: 1.4rem; font-weight: 900; color: var(--text-main); min-width: 30px; text-align: center; }
+        .qty-num { font-size: 1.6rem; font-weight: 900; color: var(--text-main); min-width: 40px; text-align: center; }
         
-        .custom-price-input { width: 100%; height: 35px; background: var(--surface); border: 2px solid var(--border-thick); border-radius: 8px; padding: 0 10px; font-size: 1.1rem; font-weight: 800; color: var(--text-main); text-align: center; margin-left: 5px; }
+        .custom-price-input { width: 100%; height: 45px; background: var(--surface); border: 2px solid var(--border-thick); border-radius: 8px; padding: 0 10px; font-size: 1.2rem; font-weight: 800; color: var(--text-main); text-align: center; margin-left: 5px; }
         .custom-price-input:focus { border-color: var(--primary); }
-        .btn-add-custom { background: var(--primary); color: white; border: none; height: 35px; padding: 0 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .btn-add-custom { background: var(--primary); color: white; border: none; height: 45px; padding: 0 15px; border-radius: 8px; font-weight: 900; font-size:1.1rem; cursor: pointer; }
 
         /* ================= الفاتورة (الشريط الجانبي) ================= */
-        .sidebar-header { font-size: 1.5rem; font-weight: 900; border-bottom: 2px solid var(--border-thick); padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; color: var(--primary);}
-        .cart-items-list { flex: 1; overflow-y: auto; background: var(--surface-light); border-radius: 12px; padding: 10px; border: 1px solid var(--border-thick); margin-bottom: 10px; }
+        .sidebar-header { font-size: 1.8rem; font-weight: 900; border-bottom: 2px solid var(--border-thick); padding-bottom: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--primary);}
+        .cart-items-list { flex: 1; overflow-y: auto; background: var(--surface-light); border-radius: 12px; padding: 15px; border: 1px solid var(--border-thick); margin-bottom: 15px; }
         
-        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e5e7eb; gap: 8px; background: var(--surface); border-radius: 8px; margin-bottom: 5px;}
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e5e7eb; gap: 10px; background: var(--surface); border-radius: 8px; margin-bottom: 8px;}
         .cart-item-row:last-child { border-bottom: none; margin-bottom: 0; }
         .cart-item-info { flex: 1; display: flex; flex-direction: column; }
         
-        .cart-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .cart-item-name { font-weight: 900; font-size: 1.1rem; color: var(--text-main); }
-        .cart-item-price { font-size: 1.1rem; font-weight: 900; color: var(--success); }
+        .cart-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .cart-item-name { font-weight: 900; font-size: 1.2rem; color: var(--text-main); }
+        .cart-item-price { font-size: 1.2rem; font-weight: 900; color: var(--success); }
         
-        .btn-edit-price { background: #fff5f0; border: 1px solid var(--primary); color: var(--primary); border-radius: 6px; padding: 4px 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-edit-price { background: #fff5f0; border: 1px solid var(--primary); color: var(--primary); border-radius: 6px; padding: 6px 10px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-edit-price:hover { background: var(--primary); color: white; }
-        .btn-edit-price:active { transform: scale(0.95); }
 
-        .cart-item-actions { display: flex; align-items: center; gap: 8px; background: var(--bg-main); padding: 5px; border-radius: 8px; border: 1px solid var(--border-thick); }
-        .modal-qty-btn { background: var(--surface); color: var(--text-main); border: 1px solid var(--border-thick); width: 28px; height: 28px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: center; align-items: center;}
+        .cart-item-actions { display: flex; align-items: center; gap: 10px; background: var(--bg-main); padding: 5px; border-radius: 8px; border: 1px solid var(--border-thick); }
+        .modal-qty-btn { background: var(--surface); color: var(--text-main); border: 1px solid var(--border-thick); width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.4rem; display: flex; justify-content: center; align-items: center;}
         .modal-qty-btn:active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); border-top: 2px solid var(--border-thick); margin-top: 5px;}
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 1.5rem; font-weight: 900; color: var(--text-main); border-top: 2px solid var(--border-thick); margin-top: 10px;}
         .cart-total-row span:last-child { color: var(--primary); }
         
-        .order-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .type-btn { background: var(--surface-light); border: 2px solid var(--border-thick); color: var(--text-main); padding: 12px; border-radius: 8px; font-weight: 900; font-size: 1rem; cursor: pointer; }
+        .order-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .type-btn { background: var(--surface-light); border: 2px solid var(--border-thick); color: var(--text-main); padding: 15px; border-radius: 8px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.2s;}
         .type-btn.selected { background: #fff5f0; border-color: var(--primary); color: var(--primary); }
         
-        .customer-name-input, .notes-input { width: 100%; background: var(--surface); border: 2px solid var(--border-thick); border-radius: 8px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
-        .customer-name-input { height: 45px; padding: 0 15px; font-size: 1.1rem; }
-        .notes-input { height: 60px; padding: 10px 15px; font-size: 1rem; resize: none; }
+        .customer-name-input, .notes-input { width: 100%; background: var(--surface); border: 2px solid var(--border-thick); border-radius: 8px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
+        .customer-name-input { height: 50px; padding: 0 15px; font-size: 1.2rem; }
+        .notes-input { height: 70px; padding: 10px 15px; font-size: 1.1rem; resize: none; }
         .customer-name-input:focus, .notes-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(255,102,0,0.1); }
         
-        .btn-confirm { width: 100%; background: var(--success); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.3rem; font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-confirm { width: 100%; background: var(--success); color: white; border: none; padding: 20px; border-radius: 8px; font-size: 1.5rem; font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
         .btn-confirm:hover { background: #059669; }
-        .btn-confirm:active { background: #047857; }
+        .btn-confirm:active { background: #047857; transform: scale(0.98);}
 
         /* ================= نافذة تعديل السعر المنبثقة ================= */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 4000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--surface); width: 350px; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid var(--primary); }
-        .modal-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 15px; color: var(--primary); text-align: center; border-bottom: 2px solid var(--border-thick); padding-bottom: 10px; }
-        .modal-input-group { margin-bottom: 15px; }
-        .modal-input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--text-muted); }
-        .modal-input-group input { width: 100%; height: 45px; font-size: 1.3rem; font-weight: 900; text-align: center; border: 2px solid var(--border-thick); border-radius: 8px; color: var(--text-main); }
+        .modal-box { background: var(--surface); width: 400px; border-radius: 12px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid var(--primary); }
+        .modal-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; color: var(--primary); text-align: center; border-bottom: 2px solid var(--border-thick); padding-bottom: 10px; }
+        .modal-input-group { margin-bottom: 20px; }
+        .modal-input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--text-muted); font-size: 1.1rem;}
+        .modal-input-group input { width: 100%; height: 50px; font-size: 1.4rem; font-weight: 900; text-align: center; border: 2px solid var(--border-thick); border-radius: 8px; color: var(--text-main); }
         .modal-input-group input:focus { border-color: var(--primary); outline: none; }
         .modal-actions { display: flex; gap: 10px; }
-        .modal-btn { flex: 1; height: 45px; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        .modal-btn { flex: 1; height: 50px; border: none; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
         .modal-btn-save { background: var(--success); color: white; }
         .modal-btn-cancel { background: var(--surface-light); border: 2px solid var(--border-thick); color: var(--text-main); }
 
         /* ================= لوحة الإدارة وتفاصيل الصناديق ================= */
         .dashboard-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .dashboard-overlay.active { display: flex; }
-        .dashboard-modal { background: var(--bg-main); width: 95%; max-width: 1300px; height: 90vh; border-radius: 16px; display: flex; flex-direction: column; border: 2px solid var(--primary); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .dashboard-modal { background: var(--bg-main); width: 95%; max-width: 1400px; height: 90vh; border-radius: 16px; display: flex; flex-direction: column; border: 2px solid var(--primary); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        .dash-header { background: var(--surface); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-thick); }
-        .dash-title { font-size: 1.6rem; font-weight: 900; display: flex; align-items: center; gap: 10px; color: var(--primary); }
-        .close-dash { background: var(--danger); border: none; color: white; width: 40px; height: 40px; border-radius: 8px; font-size: 1.4rem; cursor: pointer; }
+        .dash-header { background: var(--surface); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-thick); }
+        .dash-title { font-size: 1.8rem; font-weight: 900; display: flex; align-items: center; gap: 10px; color: var(--primary); }
+        .close-dash { background: var(--danger); border: none; color: white; width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem; cursor: pointer; }
         .close-dash:hover { background: #dc2626; }
         
-        .dash-tabs { display: flex; background: var(--surface); padding: 15px 25px; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border-thick);}
-        .tab-btn { background: var(--surface-light); border: 2px solid var(--border-thick); color: var(--text-main); font-size: 1rem; font-weight: bold; padding: 10px 15px; cursor: pointer; border-radius: 8px; }
+        .dash-tabs { display: flex; background: var(--surface); padding: 15px 30px; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border-thick);}
+        .tab-btn { background: var(--surface-light); border: 2px solid var(--border-thick); color: var(--text-main); font-size: 1.1rem; font-weight: bold; padding: 12px 20px; cursor: pointer; border-radius: 8px; transition: 0.2s;}
         .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         
-        .dash-content { flex: 1; overflow-y: auto; padding: 25px; background: var(--surface); }
+        .dash-content { flex: 1; overflow-y: auto; padding: 30px; background: var(--surface); }
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .stat-card { background: var(--surface-light); border: 1px solid var(--border-thick); padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-card h3 { color: var(--text-muted); margin-bottom: 10px; font-size: 1.1rem; }
-        .stat-card .value { font-size: 2.2rem; font-weight: 900; color: var(--text-main); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--surface-light); border: 1px solid var(--border-thick); padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-card h3 { color: var(--text-muted); margin-bottom: 10px; font-size: 1.2rem; }
+        .stat-card .value { font-size: 2.5rem; font-weight: 900; color: var(--text-main); }
         .stat-card.danger .value { color: var(--danger); }
         .stat-card.success .value { color: var(--success); }
         .stat-card.delivery .value { color: #2563eb; }
@@ -160,42 +157,45 @@
         .btn-shift { background: var(--danger); color: white; border: none; padding: 15px 25px; border-radius: 8px; font-weight: bold; font-size: 1.3rem; cursor: pointer; margin-top: 15px;}
         .btn-shift:hover { background: #dc2626; }
 
-        .order-row { background: var(--surface-light); border: 1px solid var(--border-thick); border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .order-row { background: var(--surface-light); border: 1px solid var(--border-thick); border-radius: 10px; padding: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .order-row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-thick); padding-bottom: 10px; }
-        .order-info h4 { color: var(--primary); font-size: 1.3rem; margin-bottom: 5px; }
-        .order-info p { color: var(--text-muted); font-size: 1rem; font-weight: 600; margin-bottom: 0;}
-        .btn-action-del { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .order-info h4 { color: var(--primary); font-size: 1.4rem; margin-bottom: 5px; }
+        .order-info p { color: var(--text-muted); font-size: 1.1rem; font-weight: 600; margin-bottom: 0;}
+        .btn-action-del { background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
         
-        /* جدول تفاصيل الطلب داخل لوحة الإدارة */
         .order-details-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-thick); }
-        .order-details-table th, .order-details-table td { padding: 8px 12px; text-align: right; border-bottom: 1px solid #e5e7eb; }
+        .order-details-table th, .order-details-table td { padding: 10px 15px; text-align: right; border-bottom: 1px solid #e5e7eb; font-size: 1.1rem;}
         .order-details-table th { background: var(--bg-main); font-weight: 800; color: var(--text-muted); }
         .order-details-table tr:last-child td { border-bottom: none; }
         .trash-badge { color: var(--danger); font-weight: bold; border: 1px solid var(--danger); padding: 3px 8px; border-radius: 4px; font-size: 0.9rem; }
 
-        .shift-detail-box { background: var(--surface-light); border: 2px solid var(--primary); border-radius: 12px; padding: 25px; margin-bottom: 15px; }
-        .shift-header-info { display: flex; justify-content: space-between; border-bottom: 2px solid var(--border-thick); padding-bottom: 15px; margin-bottom: 15px; }
+        /* تعديلات أرشيف الصناديق */
+        .shift-detail-box { background: var(--surface-light); border: 2px solid var(--primary); border-radius: 12px; padding: 25px; margin-bottom: 20px; transition: 0.3s;}
+        .shift-header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .shift-orders-container { display: none; margin-top: 20px; border-top: 2px dashed var(--border-thick); padding-top: 20px; }
+        .btn-toggle-shift { background: #fff5f0; color: var(--primary); border: 2px solid var(--primary); padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;}
+        .btn-toggle-shift:hover { background: var(--primary); color: white; }
 
-        /* ================= تصميم محرر المنيو الواضح ================= */
-        .menu-cat-block { background: var(--surface-light); border: 1px solid var(--border-thick); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .menu-cat-title { color: var(--primary); font-size: 1.4rem; font-weight: 900; margin-bottom: 15px; border-bottom: 2px solid var(--border-thick); padding-bottom: 10px; }
+        /* ================= تصميم محرر المنيو ================= */
+        .menu-cat-block { background: var(--surface-light); border: 1px solid var(--border-thick); padding: 25px; border-radius: 12px; margin-bottom: 25px; }
+        .menu-cat-title { color: var(--primary); font-size: 1.5rem; font-weight: 900; margin-bottom: 15px; border-bottom: 2px solid var(--border-thick); padding-bottom: 10px; }
         
-        .menu-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .menu-table th, .menu-table td { padding: 10px; border: 1px solid var(--border-thick); text-align: right; }
+        .menu-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .menu-table th, .menu-table td { padding: 12px; border: 1px solid var(--border-thick); text-align: right; font-size: 1.1rem;}
         .menu-table th { background: var(--bg-main); font-weight: 900; color: var(--text-main); }
         .menu-table td { background: var(--surface); }
-        .menu-table input[type="text"], .menu-table input[type="number"] { width: 100%; padding: 8px; border: 1px solid var(--border-thick); border-radius: 6px; font-weight: bold; font-family: 'Cairo'; }
+        .menu-table input[type="text"], .menu-table input[type="number"] { width: 100%; padding: 10px; border: 1px solid var(--border-thick); border-radius: 6px; font-weight: bold; font-family: 'Cairo'; font-size: 1.1rem;}
         .menu-table input:focus { border-color: var(--primary); outline: none; }
         .menu-table .check-custom { transform: scale(1.5); cursor: pointer; }
         
-        .btn-sm-save { background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-sm-del { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-sm-save { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem;}
+        .btn-sm-del { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem;}
 
-        .add-item-box { background: var(--bg-main); padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .add-item-box input[type="text"], .add-item-box input[type="number"] { padding: 10px; border: 1px solid var(--border-thick); border-radius: 6px; font-weight: bold; flex: 1; min-width: 150px; }
-        .btn-add-new { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .add-item-box { background: var(--bg-main); padding: 20px; border-radius: 8px; border: 1px dashed var(--primary); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .add-item-box input[type="text"], .add-item-box input[type="number"] { padding: 12px; border: 1px solid var(--border-thick); border-radius: 6px; font-weight: bold; flex: 1; min-width: 200px; font-size: 1.1rem;}
+        .btn-add-new { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem;}
 
-        /* ================= تنسيقات الفاتورة المخصصة (80mm) لحل مشكلة القص ================= */
+        /* ================= تنسيقات الفاتورة الحرارية (80mm) ================= */
         .receipt-print-zone { display: none; }
         
         @media print {
@@ -204,36 +204,37 @@
             
             body, html { width: 100% !important; background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
             
-            /* العرض الدقيق المسموح للطباعة الحرارية 80mm هو 72-76mm */
-            .receipt-print-zone { display: block !important; width: 76mm !important; margin: 0 auto !important; padding: 0 2mm !important; box-sizing: border-box !important; direction: rtl !important; font-family: 'Cairo', sans-serif !important; }
+            /* تم ضبط العرض ليتناسب مع ورق 80mm القابل للطباعة فعلياً هو 76mm */
+            .receipt-print-zone { display: block !important; width: 76mm !important; margin: 0 auto !important; padding: 2mm !important; box-sizing: border-box !important; direction: rtl !important; font-family: 'Cairo', sans-serif !important; }
             .receipt-print-zone * { color: #000 !important; }
             
             .receipt-container { width: 100% !important; margin: 0 !important; padding: 0 !important; }
             .text-center { text-align: center !important; }
             .font-bold { font-weight: 900 !important; }
-            .brand-name { font-size: 24px !important; font-weight: 900 !important; border-bottom: 2px dashed #000 !important; padding-bottom: 5px !important; margin-bottom: 10px !important; }
+            .brand-name { font-size: 22px !important; font-weight: 900 !important; border-bottom: 2px dashed #000 !important; padding-bottom: 5px !important; margin-bottom: 10px !important; }
             
-            .info-row { display: flex !important; justify-content: space-between !important; font-size: 16px !important; font-weight: 800 !important; margin-bottom: 5px !important; width: 100% !important; }
+            .info-row { display: flex !important; justify-content: space-between !important; font-size: 14px !important; font-weight: 800 !important; margin-bottom: 5px !important; width: 100% !important; }
             
             table { width: 100% !important; border-collapse: collapse !important; margin-top: 10px !important; margin-bottom: 10px !important; table-layout: fixed !important; }
-            th { border-bottom: 2px solid #000 !important; padding-bottom: 5px !important; font-size: 15px !important; font-weight: 900 !important; }
-            td { padding: 6px 0 !important; border-bottom: 1px dashed #000 !important; font-size: 16px !important; font-weight: 800 !important; vertical-align: top !important; word-wrap: break-word !important; }
             
-            .col-qty { width: 15% !important; text-align: center !important; font-size: 18px !important; }
-            .col-name { width: 55% !important; text-align: right !important; padding-right: 2px !important; line-height: 1.3 !important; }
-            .col-price { width: 30% !important; text-align: left !important; }
+            /* إصلاح التداخل: تصغير الخط قليلاً وتوزيع النسب بدقة لتناسب المساحة الضيقة */
+            th { border-bottom: 2px solid #000 !important; padding-bottom: 5px !important; font-size: 13px !important; font-weight: 900 !important; }
+            td { padding: 6px 0 !important; border-bottom: 1px dashed #000 !important; font-size: 13px !important; font-weight: 800 !important; vertical-align: middle !important; word-wrap: break-word !important; }
+            
+            .col-qty { width: 20% !important; text-align: center !important; }
+            .col-name { width: 45% !important; text-align: right !important; padding-right: 5px !important; line-height: 1.3 !important; }
+            .col-price { width: 35% !important; text-align: left !important; }
 
-            .notes-box { border: 2px dashed #000 !important; padding: 8px !important; margin-top: 10px !important; font-size: 16px !important; font-weight: 800 !important; width: 100% !important; box-sizing: border-box !important; }
+            .notes-box { border: 2px dashed #000 !important; padding: 8px !important; margin-top: 10px !important; font-size: 14px !important; font-weight: 800 !important; width: 100% !important; box-sizing: border-box !important; }
             .totals-section { margin-top: 10px !important; border-top: 2px solid #000 !important; padding-top: 8px !important; width: 100% !important; }
-            .total-row { display: flex !important; justify-content: space-between !important; font-size: 16px !important; font-weight: 800 !important; margin-bottom: 5px !important; }
-            .grand-total { font-size: 20px !important; font-weight: 900 !important; margin-top: 5px !important; border-top: 2px dashed #000 !important; padding-top: 5px !important; }
-            .footer-text { text-align: center !important; font-size: 14px !important; font-weight: 700 !important; margin-top: 15px !important; }
+            .total-row { display: flex !important; justify-content: space-between !important; font-size: 14px !important; font-weight: 800 !important; margin-bottom: 5px !important; }
+            .grand-total { font-size: 18px !important; font-weight: 900 !important; margin-top: 5px !important; border-top: 2px dashed #000 !important; padding-top: 5px !important; }
+            .footer-text { text-align: center !important; font-size: 12px !important; font-weight: 700 !important; margin-top: 15px !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- حاويات الواجهة الأساسية -->
     <div class="main-content">
         <header class="header">
             <button class="btn-control" id="btn-back" onclick="goBack()" style="visibility: hidden;"><i class="fas fa-arrow-right"></i> رجوع</button>
@@ -254,22 +255,21 @@
         </main>
     </div>
 
-    <!-- الشريط الجانبي (الفاتورة) -->
     <div class="sidebar">
         <div class="sidebar-header"><i class="fas fa-receipt"></i> الفاتورة الحالية</div>
         <div class="cart-items-list" id="cart-items-list"></div>
         
         <div class="cart-total-row"><span>الإجمالي (أصناف):</span><span id="cart-subtotal-price">0</span></div>
-        <div class="cart-total-row" id="delivery-fee-display" style="display:none; font-size:1.1rem; color:var(--text-muted); border-top:none; padding-top:0;"><span>التوصيل:</span><span id="delivery-fee-val">0</span></div>
+        <div class="cart-total-row" id="delivery-fee-display" style="display:none; font-size:1.2rem; color:var(--text-muted); border-top:none; padding-top:0;"><span>التوصيل:</span><span id="delivery-fee-val">0</span></div>
         <div class="cart-total-row" style="color:var(--success);"><span>النهائي:</span><span id="cart-total-price">0</span></div>
 
-        <div class="delivery-section" style="margin-top: 10px;">
+        <div class="delivery-section" style="margin-top: 15px;">
             <div class="order-type-grid">
                 <button class="type-btn selected" id="btn-pickup" onclick="setOrderType('pickup')">استلام صالة</button>
                 <button class="type-btn" id="btn-delivery" onclick="setOrderType('delivery')">توصيل 🛵</button>
             </div>
             
-            <div id="delivery-input-container" style="display:none; margin-bottom: 10px;">
+            <div id="delivery-input-container" style="display:none; margin-bottom: 15px;">
                 <input type="number" id="delivery-fee-input" class="customer-name-input" placeholder="أدخل مبلغ التوصيل (ل.س)..." oninput="updateCartSidebar()" style="border-color:#2563eb;">
             </div>
 
@@ -281,7 +281,6 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل السعر (الميزة الجديدة) -->
     <div class="modal-overlay" id="edit-price-modal">
         <div class="modal-box">
             <div class="modal-title">تعديل السعر الإفرادي</div>
@@ -297,7 +296,6 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم المدير -->
     <div class="dashboard-overlay" id="dashboard-modal">
         <div class="dashboard-modal">
             <div class="dash-header">
@@ -333,9 +331,9 @@
                             <div class="value" id="stat-deleted-sales">0</div>
                         </div>
                     </div>
-                    <div style="text-align: left; margin-top: 20px; padding: 20px; background: var(--surface-light); border-radius: 12px; border: 1px solid var(--border-thick);">
-                        <h2 style="color:var(--success); margin-bottom:15px; font-size: 2rem;">المجموع الكلي بالصندوق: <span id="stat-grand-total">0</span> S.P</h2>
-                        <button class="btn-shift" onclick="closeShiftProcess()"><i class="fas fa-lock"></i> إغلاق الصندوق وتصفير الوردية</button>
+                    <div style="text-align: left; margin-top: 25px; padding: 25px; background: var(--surface-light); border-radius: 12px; border: 1px solid var(--border-thick);">
+                        <h2 style="color:var(--success); margin-bottom:15px; font-size: 2.2rem;">المجموع الكلي بالصندوق: <span id="stat-grand-total">0</span> S.P</h2>
+                        <button class="btn-shift" onclick="closeShiftProcess()"><i class="fas fa-lock"></i> إغلاق الصندوق وتصفير الوردية (حفظ دائم)</button>
                     </div>
                 </div>
                 
@@ -348,7 +346,7 @@
                 </div>
 
                 <div id="tab-menu" class="tab-pane">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
                         <h2 style="color: var(--primary);">تعديل وإضافة أصناف المنيو</h2>
                         <button onclick="resetMenuToDefault()" class="btn-control danger"><i class="fas fa-undo"></i> استعادة المنيو الافتراضي</button>
                     </div>
@@ -359,11 +357,10 @@
         </div>
     </div>
 
-    <!-- منطقة الطباعة -->
     <div class="receipt-print-zone" id="printable-receipt"></div>
 
     <script>
-        // ================= الداتا الأساسية والمنيو =================
+        // ================= الداتا الأساسية =================
         const defaultMenuData = [
           { "id": "shawarma", "title": "ركن الشاورما", "icon": "svg_shawarma", "items": [ { "name": "شاورما كبيرة", "price": 20000 }, { "name": "شاورما وسط", "price": 16000 }, { "name": "شاورما صغيرة", "price": 12000 }, { "name": "شاورما دبل", "price": 27000 }, { "name": "وجبة عربي", "price": 35000 }, { "name": "وجبة عربي دبل", "price": 45000 }, { "name": "فرط شاورما", "customPrice": true }, { "name": "كيلو شاورما", "price": 150000 } ] },
           { "id": "western", "title": "ركن الغربي", "icon": "svg_sandwich", "subCategories": [ { "id": "western_sandwiches", "title": "السندويشات", "items": [ { "name": "كريسبي", "price": 35000 }, { "name": "زنجر", "price": 35000 }, { "name": "فلاي تشكن", "price": 40000 } ] }, { "id": "western_meals", "title": "الوجبات", "items": [ { "name": "وجبة كريسبي", "price": 60000 }, { "name": "لودد تشكن فرايز", "price": 35000 } ] } ] },
@@ -382,9 +379,10 @@
 
         let cart = {}; let selectedOrderType = 'pickup'; let navigationHistory = []; let deliveryFee = 0;
 
-        // ================= إعداد قاعدة البيانات (IndexedDB) =================
+        // ================= إعداد قاعدة البيانات الدائمة =================
         let db;
-        const dbRequest = indexedDB.open("FlyChickenPOS_DB", 5); // تم رفع الإصدار للتأكد من نظافة الداتا
+        // تم رفع الإصدار إلى 6 لضمان التحديث النظيف لقاعدة البيانات في جهازك
+        const dbRequest = indexedDB.open("FlyChickenPOS_DB", 6);
         dbRequest.onupgradeneeded = e => { 
             db = e.target.result; 
             if (!db.objectStoreNames.contains("orders")) db.createObjectStore("orders", { keyPath: "id" }); 
@@ -392,12 +390,13 @@
         };
         dbRequest.onsuccess = e => { 
             db = e.target.result; 
-            loadDashboardData(); // تحميل الداتا أول ما يفتح النظام
+            loadDashboardData(); 
         };
+        dbRequest.onerror = e => console.error("IndexedDB Error:", e.target.error);
 
         window.onload = () => { renderCategories(); };
 
-        // اختصار زر الجمع (Numpad +) لإتمام الفاتورة
+        // اختصار لوحة المفاتيح لإتمام الطلب
         document.addEventListener('keydown', (e) => {
             if (e.key === '+' || e.key === 'Add') {
                 if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); processOrder(); }
@@ -405,7 +404,7 @@
             }
         });
 
-        // ================= المنيو وعرض الشبكة =================
+        // ================= المنيو والأيقونات =================
         function getIconHTML(iconName) {
             if (iconName === 'svg_shawarma') return `<svg viewBox="0 0 64 64" fill="currentColor"><path d="M30 2h4v8h-4z M16 12h32q4 0 4 4t-4 4H16q-4 0-4-4t4-4z M18 22h28q4 0 4 4t-4 4H18q-4 0-4-4t4-4z M20 32h24q4 0 4 4t-4 4H20q-4 0-4-4t4-4z M22 42h20q4 0 4 4t-4 4H22q-4 0-4-4t4-4z M30 52h4v10h-4z"/></svg>`;
             else if (iconName === 'svg_sandwich') return `<svg viewBox="0 0 64 64" fill="currentColor"><path d="M10 26 C 10 10, 54 10, 54 26 Z" /><path d="M6 30 L16 24 L24 32 L32 24 L40 32 L48 24 L58 30 L58 36 L6 36 Z" /><path d="M10 40 C 10 52, 54 52, 54 40 Z" /></svg>`;
@@ -488,7 +487,7 @@
         function goBack() { navigationHistory.pop(); if (navigationHistory.length > 0) renderCurrentLevel(navigationHistory[navigationHistory.length - 1]); else renderCategories(); }
         document.addEventListener('click', (e) => { if (!e.target.closest('.square-card')) document.querySelectorAll('.square-card.controls-open').forEach(c => c.classList.remove('controls-open')); });
 
-        // ================= تحديث الفاتورة =================
+        // ================= إدارة الفاتورة الجانبية =================
         function updateCartSidebar() {
             const list = document.getElementById('cart-items-list'); list.innerHTML = ''; let itemsTotal = 0;
             
@@ -502,7 +501,7 @@
                     <div class="cart-item-row">
                         <div class="cart-item-actions">
                             <button class="modal-qty-btn" onclick="updateCartItemModal('${itemName}', 1)">+</button>
-                            <span style="font-weight:900; font-size:1.2rem;">${cart[itemName].qty}</span>
+                            <span style="font-weight:900; font-size:1.3rem;">${cart[itemName].qty}</span>
                             <button class="modal-qty-btn" onclick="updateCartItemModal('${itemName}', -1)">-</button>
                         </div>
                         <div class="cart-item-info">
@@ -528,7 +527,6 @@
             if(selectedOrderType === 'delivery') { dfDisp.style.display = 'flex'; document.getElementById('delivery-fee-val').innerText = deliveryFee.toLocaleString('en-US'); } 
             else { dfDisp.style.display = 'none'; }
             
-            // تحديث البطاقات
             document.querySelectorAll('.square-card').forEach(card => {
                 const nameEl = card.querySelector('.card-name');
                 if(nameEl) {
@@ -543,7 +541,6 @@
 
         window.updateCartItemModal = function(itemName, change) { if(cart[itemName]) { cart[itemName].qty += change; if(cart[itemName].qty <= 0) delete cart[itemName]; updateCartSidebar(); } };
         
-        // ================= وظائف تعديل السعر المباشر بالـ Modal =================
         window.openEditPriceModal = function(itemName) {
             document.getElementById('edit-item-name-label').innerText = `السعر الإفرادي لـ: ${itemName}`;
             document.getElementById('edit-item-name-hidden').value = itemName;
@@ -552,27 +549,17 @@
             document.getElementById('edit-item-price-input').focus();
         };
 
-        window.closeEditPriceModal = function() {
-            document.getElementById('edit-price-modal').classList.remove('active');
-        };
+        window.closeEditPriceModal = function() { document.getElementById('edit-price-modal').classList.remove('active'); };
 
         window.confirmEditPrice = function() {
             const itemName = document.getElementById('edit-item-name-hidden').value;
             const newPrice = parseInt(document.getElementById('edit-item-price-input').value);
-            
             if (!isNaN(newPrice) && newPrice >= 0 && cart[itemName]) {
-                cart[itemName].price = newPrice;
-                updateCartSidebar(); // سيتم ضرب السعر الجديد بالكمية فوراً
-                closeEditPriceModal();
-            } else {
-                alert("الرجاء إدخال رقم صحيح.");
-            }
+                cart[itemName].price = newPrice; updateCartSidebar(); closeEditPriceModal();
+            } else { alert("الرجاء إدخال رقم صحيح."); }
         };
 
-        // إغلاق نافذة السعر عند الضغط خارجها
-        document.getElementById('edit-price-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'edit-price-modal') closeEditPriceModal();
-        });
+        document.getElementById('edit-price-modal').addEventListener('click', (e) => { if (e.target.id === 'edit-price-modal') closeEditPriceModal(); });
 
         window.setOrderType = function(type) { 
             selectedOrderType = type; 
@@ -613,7 +600,7 @@
 
             saveToDB(orderDataToSave);
 
-            // بناء الفاتورة للطباعة
+            // بناء الفاتورة للطباعة 
             const receiptZone = document.getElementById('printable-receipt');
             let itemsRowsHTML = ''; 
             for (let item in cart) {
@@ -643,7 +630,7 @@
                 <div class="totals-section">
                     <div class="total-row"><span>المجموع:</span><span>${(orderTotal - deliveryFee).toLocaleString('en-US')}</span></div>
                     ${deliveryHTML}
-                    <div class="total-row grand-total"><span>الإجمالي الكلي:</span><span>${orderTotal.toLocaleString('en-US')} S.P</span></div>
+                    <div class="total-row grand-total"><span>الإجمالي:</span><span>${orderTotal.toLocaleString('en-US')} S.P</span></div>
                 </div>
                 <div class="footer-text">شكراً لطلبكم من Fly Chicken</div>
             </div>`;
@@ -657,11 +644,11 @@
             if(db) { 
                 const tx = db.transaction(["orders"], "readwrite"); 
                 tx.objectStore("orders").add(orderData); 
-                tx.oncomplete = () => loadDashboardData(); // تحديث الداشبورد فوراً
+                tx.oncomplete = () => loadDashboardData(); 
             } 
         }
 
-        // ================= الإدارة وتفاصيل الطلبات العميقة =================
+        // ================= الإدارة والبيانات =================
         function openDashboard() { document.getElementById('dashboard-modal').classList.add('active'); loadDashboardData(); }
         function closeDashboard() { document.getElementById('dashboard-modal').classList.remove('active'); }
         
@@ -673,25 +660,28 @@
             if(tabId === 'tab-menu') renderMenuEditor();
         }
 
-        // دالة إنشاء تفاصيل الجدول لكل طلب (تُستخدم في كل مكان في الداشبورد)
         function generateOrderItemsTable(itemsObj) {
             let html = `<table class="order-details-table">
                             <thead><tr><th>الصنف</th><th>الكمية</th><th>السعر الإفرادي</th><th>المجموع</th></tr></thead>
                             <tbody>`;
             for (let itemName in itemsObj) {
                 let item = itemsObj[itemName];
-                html += `<tr>
-                            <td>${itemName}</td>
-                            <td>${item.qty}</td>
-                            <td>${item.price.toLocaleString()}</td>
-                            <td>${(item.price * item.qty).toLocaleString()}</td>
-                         </tr>`;
+                html += `<tr><td>${itemName}</td><td>${item.qty}</td><td>${item.price.toLocaleString()}</td><td>${(item.price * item.qty).toLocaleString()}</td></tr>`;
             }
             html += `</tbody></table>`;
             return html;
         }
 
-        // تحميل وترتيب بيانات الداشبورد بالكامل
+        // الدالة المسؤولة عن عرض وإخفاء تفاصيل وردية محددة
+        window.toggleShiftDetails = function(shiftId) {
+            const container = document.getElementById(`shift-details-${shiftId}`);
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        };
+
         function loadDashboardData() {
             if (!db) return;
             const tx = db.transaction(["orders", "shifts"], "readonly");
@@ -701,10 +691,9 @@
             let pickupSales = 0, deliverySales = 0, totalOrders = 0, deletedSales = 0;
             let activePickupHTML = '', activeDeliveryHTML = '', trashHTML = '';
 
+            // 1. جلب الطلبات النشطة للوردية الحالية
             orderStore.getAll().onsuccess = (e) => {
                 const allOrders = e.target.result;
-                
-                // فرز الطلبات الفعالة للوردية الحالية
                 const activeOrders = allOrders.filter(o => !o.shiftClosed);
                 
                 activeOrders.forEach(order => {
@@ -758,39 +747,46 @@
                 document.getElementById('trash-orders-list').innerHTML = trashHTML || '<h3 style="color:var(--text-muted); text-align:center;">سلة المهملات فارغة</h3>';
             };
 
-            // تحميل أرشيف الصناديق
+            // 2. جلب أرشيف الصناديق (بشكل دائم ومفصل)
             shiftStore.getAll().onsuccess = (e) => {
                 const shifts = e.target.result.reverse(); // الأحدث أولاً
                 let shiftsHTML = '';
                 shifts.forEach(shift => {
                     let shiftOrdersHTML = '';
-                    shift.orders.forEach(order => {
-                        shiftOrdersHTML += `
-                        <div style="background: var(--surface); padding: 10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-thick);">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                                <strong>الطلب ${order.id.slice(-5)} (${order.type})</strong>
-                                <strong style="color:var(--success)">${order.total.toLocaleString()} S.P</strong>
-                            </div>
-                            ${generateOrderItemsTable(order.items)}
-                        </div>`;
-                    });
+                    if (shift.orders && shift.orders.length > 0) {
+                        shift.orders.forEach(order => {
+                            shiftOrdersHTML += `
+                            <div style="background: var(--surface); padding: 15px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-thick);">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                    <strong>الطلب ${order.id.slice(-5)} (${order.type}) - ${order.date}</strong>
+                                    <strong style="color:var(--success); font-size:1.2rem;">${order.total.toLocaleString()} S.P</strong>
+                                </div>
+                                ${generateOrderItemsTable(order.items)}
+                            </div>`;
+                        });
+                    } else {
+                        shiftOrdersHTML = '<p style="text-align:center; color:var(--text-muted);">لا توجد طلبات ناجحة في هذه الوردية</p>';
+                    }
 
                     shiftsHTML += `
                     <div class="shift-detail-box">
                         <div class="shift-header-info">
                             <div>
-                                <h3 style="color:var(--primary); margin-bottom:5px;"><i class="fas fa-archive"></i> وردية: ${shift.date}</h3>
-                                <p style="color:var(--text-muted); font-weight:bold;">عدد الطلبات: ${shift.totalOrders} طلب ناجح</p>
+                                <h3 style="color:var(--primary); margin-bottom:5px; font-size:1.4rem;"><i class="fas fa-archive"></i> وردية تاريخ: ${shift.date}</h3>
+                                <p style="color:var(--text-muted); font-weight:bold; font-size:1.1rem;">عدد الطلبات: ${shift.totalOrders} طلب ناجح</p>
                             </div>
                             <div style="text-align:left;">
-                                <h2 style="color:var(--success);">الإجمالي: ${shift.grandTotal.toLocaleString()} S.P</h2>
+                                <h2 style="color:var(--success); font-size:1.8rem; margin-bottom:10px;">الإجمالي: ${shift.grandTotal.toLocaleString()} S.P</h2>
+                                <button class="btn-toggle-shift" onclick="toggleShiftDetails('${shift.id}')">عرض / إخفاء تفاصيل الطلبات</button>
                             </div>
                         </div>
-                        <h4 style="margin-bottom:10px;">تفاصيل طلبات الوردية:</h4>
-                        ${shiftOrdersHTML}
+                        <div id="shift-details-${shift.id}" class="shift-orders-container">
+                            <h4 style="margin-bottom:15px; color:var(--text-main);">تفاصيل جميع طلبات الوردية:</h4>
+                            ${shiftOrdersHTML}
+                        </div>
                     </div>`;
                 });
-                document.getElementById('shifts-list-container').innerHTML = shiftsHTML || '<h3 style="color:var(--text-muted); text-align:center;">لا يوجد ورديات مغلقة بعد</h3>';
+                document.getElementById('shifts-list-container').innerHTML = shiftsHTML || '<h3 style="color:var(--text-muted); text-align:center;">لا يوجد ورديات مغلقة بعد في الأرشيف</h3>';
             };
         }
 
@@ -808,7 +804,7 @@
         };
 
         window.closeShiftProcess = function() {
-            if(!confirm('إغلاق الصندوق سيقوم بتصفير العدادات الحالية ونقل كل الطلبات (بما فيها المهملات) إلى الأرشيف. هل أنت متأكد؟')) return;
+            if(!confirm('إغلاق الصندوق سيقوم بتصفير العدادات الحالية وحفظ كافة تفاصيل الوردية بشكل دائم في الأرشيف. هل أنت متأكد؟')) return;
             
             const tx = db.transaction(["orders", "shifts"], "readwrite");
             const orderStore = tx.objectStore("orders");
@@ -818,7 +814,7 @@
                 const allOrders = e.target.result;
                 const activeOrders = allOrders.filter(o => !o.shiftClosed);
                 
-                if(activeOrders.length === 0) { alert('الوردية الحالية فارغة.'); return; }
+                if(activeOrders.length === 0) { alert('الوردية الحالية فارغة. لا يوجد شيء لإغلاقه.'); return; }
 
                 let shiftGrandTotal = 0;
                 let successfulOrders = [];
@@ -828,7 +824,7 @@
                         shiftGrandTotal += o.total;
                         successfulOrders.push(o);
                     }
-                    o.shiftClosed = true; // علامة أن الطلب ترحل
+                    o.shiftClosed = true; // تم ترحيل الطلب للأرشيف
                     orderStore.put(o);
                 });
 
@@ -837,24 +833,24 @@
                     date: new Date().toLocaleString('en-US'),
                     grandTotal: shiftGrandTotal,
                     totalOrders: successfulOrders.length,
-                    orders: successfulOrders // نحفظ الطلبات الناجحة داخل الوردية للأرشيف
+                    orders: successfulOrders // حفظ تفاصيل الطلبات داخل الأرشيف لتسهيل الاسترجاع لاحقاً
                 };
 
                 shiftStore.add(shiftData).onsuccess = () => {
-                    alert('تم إغلاق الصندوق بنجاح وحفظه في الأرشيف.');
+                    alert('تم إغلاق الصندوق بنجاح! تفاصيل الوردية محفوظة بالكامل في قسم (أرشيف الصناديق).');
                     loadDashboardData();
                 };
             };
         };
 
-        // ================= نظام المنيو الديناميكي =================
+        // ================= إدارة المنيو =================
         function renderMenuEditor() {
             const container = document.getElementById('menu-editor-container'); let html = '';
             menuData.forEach((cat, cIdx) => {
                 html += `<div class="menu-cat-block"><div class="menu-cat-title"><i class="fas fa-folder-open"></i> القسم: ${cat.title}</div>`;
                 if(cat.subCategories && cat.subCategories.length > 0) {
                     cat.subCategories.forEach((sub, sIdx) => {
-                        html += `<h4 style="color:var(--text-muted); margin:15px 0 5px;">فرع: ${sub.title}</h4>`;
+                        html += `<h4 style="color:var(--text-muted); margin:15px 0 10px; font-size:1.2rem;">فرع: ${sub.title}</h4>`;
                         html += generateEditorTableHTML(sub.items || [], cIdx, sIdx);
                     });
                 } else { 
@@ -884,12 +880,11 @@
             });
             html += `</tbody></table>`;
             
-            // فورم إضافة صنف جديد لهذا القسم
             html += `<div class="add-item-box">
-                <strong style="color:var(--primary);">+ إضافة صنف جديد هنا:</strong>
+                <strong style="color:var(--primary); font-size:1.2rem;">+ إضافة صنف جديد هنا:</strong>
                 <input type="text" id="add_name_${cIdx}_${sIdx}" placeholder="اسم الصنف الجديد...">
                 <input type="number" id="add_price_${cIdx}_${sIdx}" placeholder="السعر...">
-                <label style="display:flex; align-items:center; gap:5px; font-weight:bold; cursor:pointer;">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:bold; cursor:pointer; font-size:1.1rem;">
                     <input type="checkbox" id="add_custom_${cIdx}_${sIdx}" class="check-custom" onchange="togglePriceInput(this, 'add_price_${cIdx}_${sIdx}')"> سعر مفتوح؟
                 </label>
                 <button class="btn-add-new" onclick="addNewItemToCat(${cIdx}, ${sIdx})">إضافة للقسم</button>
@@ -921,11 +916,11 @@
                 targetArray[iIdx].price = parseInt(priceVal) || 0;
             }
             
-            saveMenuToStorage(); alert('تم الحفظ!');
+            saveMenuToStorage(); alert('تم الحفظ بنجاح!');
         };
 
         window.deleteEditedItem = function(cIdx, sIdx, iIdx) {
-            if(!confirm("حذف الصنف؟")) return;
+            if(!confirm("هل أنت متأكد من حذف هذا الصنف؟")) return;
             let targetArray = sIdx === null ? menuData[cIdx].items : menuData[cIdx].subCategories[sIdx].items;
             targetArray.splice(iIdx, 1); saveMenuToStorage(); renderMenuEditor();
         };
