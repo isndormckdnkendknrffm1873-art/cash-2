@@ -15,6 +15,8 @@ function createWindow () {
   });
 
   mainWindow.loadFile('index.html');
+  
+  // لضمان فتح النافذة على كامل الشاشة لتفعيل التعديلات البصرية الجديدة
   mainWindow.maximize();
 }
 
